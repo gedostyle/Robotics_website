@@ -8414,3 +8414,38 @@
 			#wrapper.divided > .invert:first-child {
 				box-shadow: none !important;
 			}
+
+
+	
+    .team-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 2rem;
+        margin-top: 2rem;
+    }
+
+    .team-member {
+        flex: 0 1 200px; /* Width of each profile area */
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    /* Makes the image a perfect circle */
+    .profile-pic {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid rgba(0,0,0,0.1); /* Optional nice border */
+        margin-bottom: 1rem;
+    }
+
+    .major-text {
+        font-size: 0.8rem;
+        color: #888;
+        margin-bottom: 0.5rem;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+    }
