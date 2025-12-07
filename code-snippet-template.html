@@ -1,0 +1,157 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <title>Code Implementation - MARS Robot</title>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="stylesheet" href="assets/css/main.css" />
+        
+        <style>
+            /* This ensures the code block is centered but the text inside is left-aligned */
+            .code-wrapper {
+                max-width: 900px;
+                margin: 0 auto 2rem auto;
+                text-align: left;
+                background-color: #272822; /* Monokai-ish dark background */
+                border-radius: 6px;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+                overflow-x: auto; /* Adds scrollbar if code is too wide */
+            }
+
+            pre {
+                margin: 0;
+                padding: 1.5rem;
+            }
+
+            code {
+                font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+                font-size: 0.9em;
+                color: #f8f8f2; /* Light text code color */
+                line-height: 1.6;
+            }
+
+            /* Optional: Syntax highlighting simulation colors */
+            .keyword { color: #f92672; font-weight: bold; }
+            .func { color: #66d9ef; }
+            .string { color: #e6db74; }
+            .comment { color: #75715e; font-style: italic; }
+        </style>
+    </head>
+    <body>
+
+        <div id="wrapper" class="divided">
+
+                <section class="banner style1 orient-center content-align-center image-position-center onload-image-fade-in onload-content-fade-right">
+                        <div class="content">
+                            <h1>Code Implementation</h1>
+                            <p class="major">A deep dive into the ROS2 nodes and logic controlling the MARS robot.</p>
+                            <ul class="actions vertical">
+                                <li><a href="index.html" class="button big wide smooth-scroll-middle">Return to Main Page</a></li>
+                            </ul>
+                        </div>
+                        <div class="image">
+                            <img src="images/spotlight01.jpg" alt="" />
+                        </div>
+                    </section>
+
+                <section class="wrapper style1 align-center" id="detection">
+                        <div class="inner">
+                            <h2>1. Detection Module</h2>
+                            <p>This snippet demonstrates how we initialize the computer vision node to identify the ball using color filtering and contour detection.</p>
+                            
+                            <div class="code-wrapper">
+<pre><code><span class="comment"># Detection Node Snippet (Python / ROS2)</span>
+import cv2
+import numpy as np
+
+<span class="keyword">def</span> <span class="func">detect_ball</span>(self, image_frame):
+    <span class="comment"># Convert to HSV color space for better color segmentation</span>
+    hsv = cv2.cvtColor(image_frame, cv2.COLOR_BGR2HSV)
+    
+    <span class="comment"># Define limits for the red ball</span>
+    lower_red = np.array([0, 120, 70])
+    upper_red = np.array([10, 255, 255])
+    
+    mask = cv2.inRange(hsv, lower_red, upper_red)
+    contours, _ = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    
+    <span class="keyword">if</span> len(contours) > 0:
+        c = max(contours, key=cv2.contourArea)
+        ((x, y), radius) = cv2.minEnclosingCircle(c)
+        <span class="keyword">return</span> (x, y, radius)
+    <span class="keyword">return</span> None</code></pre>
+                            </div>
+                        </div>
+                    </section>
+
+                <section class="wrapper style1 align-center" id="planning">
+                        <div class="inner">
+                            <h2>2. Motion Planning</h2>
+                            <p>Once the object is detected, we calculate the trajectory required to intercept the target. This path planning logic ensures smooth acceleration.</p>
+
+                            <div class="code-wrapper">
+<pre><code><span class="comment"># Planning Logic (C++ Implementation)</span>
+<span class="keyword">void</span> <span class="func">calculate_trajectory</span>(Target target) {
+    <span class="comment">// Calculate error between current robot pose and target</span>
+    double error_x = target.x - current_pose.x;
+    double error_theta = atan2(error_y, error_x) - current_pose.theta;
+
+    <span class="comment">// Simple P-Controller for steering</span>
+    double angular_vel = Kp_angular * error_theta;
+    
+    <span class="comment">// Dynamic speed adjustment based on turn angle</span>
+    double linear_vel = max_speed * (1.0 - std::abs(error_theta) / M_PI);
+
+    <span class="keyword">if</span> (dist_to_target < stop_threshold) {
+        publish_cmd_vel(0.0, 0.0);
+    } <span class="keyword">else</span> {
+        publish_cmd_vel(linear_vel, angular_vel);
+    }
+}</code></pre>
+                            </div>
+                        </div>
+                    </section>
+
+                <section class="wrapper style1 align-center" id="actuation">
+                        <div class="inner">
+                            <h2>3. Actuation (Gripper)</h2>
+                            <p>The final step is the mechanical actuation of the gripper to secure the ball. We use PWM signals to control the servo motors.</p>
+
+                            <div class="code-wrapper">
+<pre><code><span class="comment"># Servo Control Snippet</span>
+<span class="keyword">def</span> <span class="func">activate_gripper</span>(state):
+    <span class="keyword">if</span> state == <span class="string">"OPEN"</span>:
+        pwm.set_duty_cycle(SERVO_PIN, 7.5) <span class="comment"># Neutral position</span>
+        logger.info(<span class="string">"Gripper Opening..."</span>)
+        
+    <span class="keyword">elif</span> state == <span class="string">"CLOSE"</span>:
+        pwm.set_duty_cycle(SERVO_PIN, 12.5) <span class="comment"># 180 degree position</span>
+        logger.info(<span class="string">"Gripper Closing..."</span>)
+        
+    time.sleep(1.0) <span class="comment"># Allow time for mechanical movement</span></code></pre>
+                            </div>
+                        </div>
+                    </section>
+
+                <footer class="wrapper style1 align-center">
+                        <div class="inner">
+                            <ul class="icons">
+                                <li><a href="#" class="icon style2 fa-github"><span class="label">GitHub</span></a></li>
+                                <li><a href="#" class="icon style2 fa-linkedin"><span class="label">LinkedIn</span></a></li>
+                                <li><a href="#" class="icon style2 fa-envelope"><span class="label">Email</span></a></li>
+                            </ul>
+                            <p>&copy; Intro to Robotics Project. Design: <a href="https://html5up.net">HTML5 UP</a>.</p>
+                        </div>
+                    </footer>
+
+            </div>
+
+        <script src="assets/js/jquery.min.js"></script>
+            <script src="assets/js/jquery.scrollex.min.js"></script>
+            <script src="assets/js/jquery.scrolly.min.js"></script>
+            <script src="assets/js/skel.min.js"></script>
+            <script src="assets/js/util.js"></script>
+            <script src="assets/js/main.js"></script>
+
+    </body>
+</html>
