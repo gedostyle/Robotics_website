@@ -8460,3 +8460,15 @@
         font-weight: 600;
         letter-spacing: 0.05em;
     }
+
+
+	.team-member .button.icon.fa-linkedin {
+        background-color: #0077b5 !important; /* Official LinkedIn Blue */
+        color: #ffffff !important;            /* White text/icon */
+        box-shadow: none !important;          /* Removes the default theme border */
+    }
+
+    /* Darker blue when you hover over it */
+    .team-member .button.icon.fa-linkedin:hover {
+        background-color: #005582 !important; 
+    }
