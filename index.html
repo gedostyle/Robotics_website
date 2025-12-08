@@ -368,6 +368,31 @@
 							.team-member .button.icon.fa-linkedin:hover {
 								background-color: #005582 !important; 
 							}
+
+							.team-member .button.icon {
+								display: inline-flex !important;  /* Aligns icon and text side-by-side */
+								align-items: center !important;   /* Vertically centers them */
+								justify-content: center !important; 
+								text-indent: 0 !important;        /* Removes the template's text offset */
+								white-space: nowrap !important;   /* Prevents "Connect" from wrapping to a new line */
+								width: auto !important;           /* Allows button to fit the content */
+								height: auto !important;          /* Fixes height issues */
+								padding: 0 1.5rem !important;     /* Standard padding (adjust as liked) */
+								line-height: 2.5rem !important;   /* Ensures vertical height consistency */
+							}
+
+							/* FIX THE ICON ITSELF */
+							/* The template likely uses a :before element for the LinkedIn logo */
+							.team-member .button.icon:before {
+								position: relative !important;    /* Stops the icon from floating outside */
+								left: auto !important;            /* Resets left positioning */
+								top: auto !important;             /* Resets top positioning */
+								margin-right: 0.75rem !important; /* Adds space between Icon and "Connect" */
+								width: auto !important;
+								height: auto !important;
+								font-size: 1.2rem;                /* Adjust icon size if needed */
+								line-height: normal !important;
+							}
 						</style>
 						<div class="inner">
 							<h2>Meet the Team</h2>
