@@ -1,37 +1,42 @@
-Story by HTML5 UP
-html5up.net | @ajlkn
-Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+# 🤖 Intro to Robotics - Team Portfolio
 
+![Status](https://img.shields.io/badge/Status-Active-success)
+![Course](https://img.shields.io/badge/Course-Intro%20to%20Robotics-blue)
+![University](https://img.shields.io/badge/Program-MEng-orange)
 
-Say hello to Story, a brand new responsive one-pager for HTML5 UP! Inspired by my work
-on Carrd*, Story is built to be extremely modular and tweakable, and as such is entirely
-built on reusable, insanely customizable elements (like "spotlight" and "gallery") that
-can be endlessly duplicated and tweaked into whatever you need to tell your story --
-without, in many cases, touching *any* CSS. Check out index-demo.html for an interactive
-demo, and index.html for the actual template. Enjoy!
+Welcome to the official documentation and web portal for our **Intro to Robotics** project. This website serves as a portfolio for the engineering team, showcasing our technical contributions, research, and final robotics implementation.
 
-Demo images** courtesy of Unsplash, a radtastic collection of CC0 (public domain) images
-you can use for pretty much whatever.
+## 👥 The Engineering Team
 
-PS: Delete index-demo.html and assets/js/demo.js when you're done messing with the demo
-as neither are needed in production :)
+We are a multidisciplinary team of Master of Engineering (MEng) students specializing in Mechanical Engineering and EECS.
 
-(* = my other side project -- carrd.co)
-(** = not included)
+| Name | Role / Major | LinkedIn |
+| :--- | :--- | :---: |
+| **Siddharth Singh** | MEng Mechanical Engineering | [![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-blue?logo=linkedin)](https://www.linkedin.com/in/siddharthsingh-me/) |
+| **Rishi Krishnan Anand** | MEng Mechanical Engineering | [![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-blue?logo=linkedin)](https://www.linkedin.com/in/rishi-anand-386a5a224/) |
+| **Xander Steele** | MEng EECS | [![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-blue?logo=linkedin)](https://www.linkedin.com/in/xander-steele-758181254/) |
+| **Zev B. Schuman** | MEng Mechanical Engineering | [![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-blue?logo=linkedin)](https://www.linkedin.com/in/zevschuman/) |
+| **Lennart Peus** | MEng Mechanical Engineering | [![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-blue?logo=linkedin)](https://www.linkedin.com/in/lennart-peus/) |
 
-AJ
-aj@lkn.io | @ajlkn
+---
 
+## 🛠️ Tech Stack
 
-Credits:
+This website is built using standard web technologies, designed to be lightweight and responsive.
 
-	Demo Images:
-		Unsplash (unsplash.com)
+* **HTML5** - Semantic structure.
+* **CSS3** - Custom flexbox styling for team cards and responsive mobile layouts.
+* **FontAwesome** - Social icons and UI elements.
 
-	Icons:
-		Font Awesome (fortawesome.github.com/Font-Awesome)
+## 📂 Project Structure
 
-	Other:
-		jQuery (jquery.com)
-		Misc. Sass functions (@HugoGiraudel)
-		Skel (skel.io)
+```text
+/
+├── index.html          # Main landing page
+├── assets/
+│   ├── css/           # Main stylesheets
+│   ├── js/            # Scripts for interactivity
+│   └── webfonts/      # FontAwesome files
+└── images/
+    ├── 1191080...jpg  # Profile pictures
+    └── ...
