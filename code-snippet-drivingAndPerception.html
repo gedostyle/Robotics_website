@@ -43,8 +43,10 @@
 
                 <section class="banner style1 orient-center content-align-center image-position-center onload-image-fade-in onload-content-fade-right">
                         <div class="content">
-                            <h1>Code Implementation</h1>
-                            <p class="major">On this page we will explain how we made the robot detect the object, plan the route to get there and eventually publish that command to get to the right place. To complete the mission we also added code for the robot to return back to where it came from.</p>
+                            <h1>Vision, Perception, and Driving</h1>
+                            <p class="major">This page describes how the robot autonomously detects the target object, estimates its position in the environment, plans a smooth trajectory, and drives precisely to a predefined stopping point. The full pipeline integrates camera-based perception, coordinate frame transformations, trajectory optimization, and closed-loop steering control. Unlike earlier labs that focused on isolated behaviors, this system unifies perception and motion into a single, repeatable workflow that allows the robot to approach the object reliably from different starting poses.
+
+For this task, LiDAR-based perception was intentionally omitted. Since the environment is planar and the objective is limited to detecting a single object, a 2D vision-based approach provided sufficient accuracy while reducing complexity and computation. All motion planning is performed in a world-fixed frame rather than the robot’s local frame, allowing for more stable and predictable behavior.</p>
                             <ul class="actions vertical">
                                 <li><a href="index.html#detect" class="button big wide smooth-scroll-middle">Return to Main Page</a></li>
                             </ul>
@@ -56,8 +58,29 @@
 
                 <section class="wrapper style1 align-center" id="detection">
                         <div class="inner">
-                            <h2>1. Detection Module</h2>
-                            <p>This snippet demonstrates how we initialize the computer vision node to identify the ball using color filtering and contour detection.</p>
+                            <h2>1. Detection and Image Processing</h2>
+                            <p>The perception pipeline begins with processing images from the onboard camera to identify the target object. The raw RGB image is first converted to grayscale, reducing noise and simplifying subsequent filtering steps. A white intensity threshold is then applied to isolate the ball from the background.
+
+Because thresholding alone produces noisy results, we apply a sequence of morphological operations to refine the binary image. Erosion followed by dilation removes small external artifacts and background noise, while dilation followed by erosion fills gaps within the object’s silhouette. This two-stage approach ensures that the detected object forms a clean, continuous region suitable for contour extraction.
+
+Additional plane filtering is used to reject detections that do not lie on the expected ground plane, further improving robustness. After filtering, contour detection is performed, and the largest valid contour is selected as the target object.
+To plan motion consistently, all positions are transformed into a common reference frame. We use tf2 to convert poses from the robot’s body frame (base_link) into the world-fixed odometry frame (odom). This is the opposite of earlier implementations that relied heavily on local-frame control.
+
+Maintaining a persistent transform buffer allows efficient and repeated lookups of the robot’s current position and orientation. The robot’s yaw is extracted from its quaternion orientation to simplify planar motion planning. Expressing both the robot and the target in the same frame allows the planner to reason globally about where the robot should move, rather than issuing reactive commands based solely on instantaneous sensor readings.
+                                Rather than driving directly toward the target, the robot follows a cubic Bézier curve connecting its current pose to a goal pose near the object. Bézier curves provide smooth curvature and continuous heading changes, resulting in more stable and mechanically gentle motion.
+
+The trajectory is sampled into a sequence of waypoints, each containing a position and heading. These waypoints define a smooth path that the robot can track using velocity control. This represents a significant improvement over earlier labs, where the robot merely tracked a point at a fixed distance along its current heading without explicit trajectory optimization.
+
+To ensure safe and repeatable behavior, the trajectory is only generated up to a fixed offset from the object. This offset corresponds to the reachable workspace of the robot and prevents overshooting or collision with the target.
+                                The robot follows the generated waypoints using a closed-loop steering controller running at 20 Hz. At each update, the robot computes its heading error and distance to the next waypoint and adjusts its velocities accordingly.
+
+A low-pass filter is applied to angular velocity commands to prevent sudden changes that could cause oscillations or wheel slip. This smoothing produces more natural motion and improves stability, especially during curved segments of the trajectory.
+
+To reduce noise-induced jitter, a deadband is applied to small angular errors. When the error falls below a defined threshold, corrective commands are suppressed, preventing excessive micro-adjustments when the robot is already well-aligned.
+
+Linear velocity is dynamically adjusted based on both turning demand and proximity to the target. The robot slows down when executing sharp turns and gradually decelerates as it approaches the final waypoint. A minimum velocity threshold ensures continuous motion while avoiding stalls. Together, these mechanisms allow the robot to stop precisely at the desired offset without overshoot.
+                                
+                                This snippet demonstrates how we initialize the computer vision node to identify the ball using color filtering and contour detection.</p>
                             
                             <div class="code-wrapper">
 <pre><code><span class="comment"># Detection Node Snippet (Python / ROS2)</span>
