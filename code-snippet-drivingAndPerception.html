@@ -59,28 +59,47 @@ For this task, LiDAR-based perception was intentionally omitted. Since the envir
                 <section class="wrapper style1 align-center" id="detection">
                         <div class="inner">
                             <h2>1. Detection and Image Processing</h2>
-                            <p>The perception pipeline begins with processing images from the onboard camera to identify the target object. The raw RGB image is first converted to grayscale, reducing noise and simplifying subsequent filtering steps. A white intensity threshold is then applied to isolate the ball from the background.
+                            <h4>Detection and Image Processing</h4>
 
-Because thresholding alone produces noisy results, we apply a sequence of morphological operations to refine the binary image. Erosion followed by dilation removes small external artifacts and background noise, while dilation followed by erosion fills gaps within the object’s silhouette. This two-stage approach ensures that the detected object forms a clean, continuous region suitable for contour extraction.
+<p>The perception pipeline begins with processing images from the onboard camera to identify the target object. The raw RGB image is first converted to grayscale, reducing noise and simplifying subsequent filtering steps. A white intensity threshold is then applied to isolate the ball from the background.</p>
 
-Additional plane filtering is used to reject detections that do not lie on the expected ground plane, further improving robustness. After filtering, contour detection is performed, and the largest valid contour is selected as the target object.
-To plan motion consistently, all positions are transformed into a common reference frame. We use tf2 to convert poses from the robot’s body frame (base_link) into the world-fixed odometry frame (odom). This is the opposite of earlier implementations that relied heavily on local-frame control.
+<p>Because thresholding alone produces noisy results, we apply a sequence of morphological operations to refine the binary image. Erosion followed by dilation removes small external artifacts and background noise, while dilation followed by erosion fills gaps within the object’s silhouette. This two-stage approach ensures that the detected object forms a clean, continuous region suitable for contour extraction.</p>
 
-Maintaining a persistent transform buffer allows efficient and repeated lookups of the robot’s current position and orientation. The robot’s yaw is extracted from its quaternion orientation to simplify planar motion planning. Expressing both the robot and the target in the same frame allows the planner to reason globally about where the robot should move, rather than issuing reactive commands based solely on instantaneous sensor readings.
-                                Rather than driving directly toward the target, the robot follows a cubic Bézier curve connecting its current pose to a goal pose near the object. Bézier curves provide smooth curvature and continuous heading changes, resulting in more stable and mechanically gentle motion.
+<p>Additional plane filtering is used to reject detections that do not lie on the expected ground plane, further improving robustness. After filtering, contour detection is performed, and the largest valid contour is selected as the target object.</p>
 
-The trajectory is sampled into a sequence of waypoints, each containing a position and heading. These waypoints define a smooth path that the robot can track using velocity control. This represents a significant improvement over earlier labs, where the robot merely tracked a point at a fixed distance along its current heading without explicit trajectory optimization.
+<h4>Identifying Object Coordinates</h4>
 
-To ensure safe and repeatable behavior, the trajectory is only generated up to a fixed offset from the object. This offset corresponds to the reachable workspace of the robot and prevents overshooting or collision with the target.
-                                The robot follows the generated waypoints using a closed-loop steering controller running at 20 Hz. At each update, the robot computes its heading error and distance to the next waypoint and adjusts its velocities accordingly.
+<p>Once the target contour is identified, its centroid is computed using the midpoint of the contour’s maximum width and height in image space. This centroid provides the object’s pixel location in the camera frame.</p>
 
-A low-pass filter is applied to angular velocity commands to prevent sudden changes that could cause oscillations or wheel slip. This smoothing produces more natural motion and improves stability, especially during curved segments of the trajectory.
+<p>Depth is estimated using similar triangles, leveraging the known physical size of the object and its apparent size in the image. This method follows the same principle introduced in earlier labs but is extended here to fully recover the object’s 3D position. The x and y image coordinates are scaled using the estimated depth, resulting in a full (x, y, z) position expressed in the camera frame.</p>
 
-To reduce noise-induced jitter, a deadband is applied to small angular errors. When the error falls below a defined threshold, corrective commands are suppressed, preventing excessive micro-adjustments when the robot is already well-aligned.
+<p>This 3D position is published to ROS topics and serves as the interface between perception and motion planning. By separating detection from control, the system remains modular and easier to debug.</p>
 
-Linear velocity is dynamically adjusted based on both turning demand and proximity to the target. The robot slows down when executing sharp turns and gradually decelerates as it approaches the final waypoint. A minimum velocity threshold ensures continuous motion while avoiding stalls. Together, these mechanisms allow the robot to stop precisely at the desired offset without overshoot.
+<h4>Coordinate Frames and Localization</h4>
+
+<p>To plan motion consistently, all positions are transformed into a common reference frame. We use tf2 to convert poses from the robot’s body frame (base_link) into the world-fixed odometry frame (odom). This is the opposite of earlier implementations that relied heavily on local-frame control.</p>
+
+<p>Maintaining a persistent transform buffer allows efficient and repeated lookups of the robot’s current position and orientation. The robot’s yaw is extracted from its quaternion orientation to simplify planar motion planning. Expressing both the robot and the target in the same frame allows the planner to reason globally about where the robot should move, rather than issuing reactive commands based solely on instantaneous sensor readings.</p>
+
+<h4>Trajectory Design</h4>
+
+<p>Rather than driving directly toward the target, the robot follows a cubic Bézier curve connecting its current pose to a goal pose near the object. Bézier curves provide smooth curvature and continuous heading changes, resulting in more stable and mechanically gentle motion.</p>
+
+<p>The trajectory is sampled into a sequence of waypoints, each containing a position and heading. These waypoints define a smooth path that the robot can track using velocity control. This represents a significant improvement over earlier labs, where the robot merely tracked a point at a fixed distance along its current heading without explicit trajectory optimization.</p>
+
+<p>To ensure safe and repeatable behavior, the trajectory is only generated up to a fixed offset from the object. This offset corresponds to the reachable workspace of the robot and prevents overshooting or collision with the target.</p>
+
+<h4>Steering and Velocity Control</h4>
+
+<p>The robot follows the generated waypoints using a closed-loop steering controller running at 20 Hz. At each update, the robot computes its heading error and distance to the next waypoint and adjusts its velocities accordingly.</p>
+
+<p>A low-pass filter is applied to angular velocity commands to prevent sudden changes that could cause oscillations or wheel slip. This smoothing produces more natural motion and improves stability, especially during curved segments of the trajectory.</p>
+
+<p>To reduce noise-induced jitter, a deadband is applied to small angular errors. When the error falls below a defined threshold, corrective commands are suppressed, preventing excessive micro-adjustments when the robot is already well-aligned.</p>
+
+<p>Linear velocity is dynamically adjusted based on both turning demand and proximity to the target. The robot slows down when executing sharp turns and gradually decelerates as it approaches the final waypoint. A minimum velocity threshold ensures continuous motion while avoiding stalls. Together, these mechanisms allow the robot to stop precisely at the desired offset without overshoot.</p>
                                 
-                                This snippet demonstrates how we initialize the computer vision node to identify the ball using color filtering and contour detection.</p>
+<p>This snippet demonstrates how we initialize the computer vision node to identify the ball using color filtering and contour detection.</p>
                             
                             <div class="code-wrapper">
 <pre><code><span class="comment"># Detection Node Snippet (Python / ROS2)</span>
