@@ -58,7 +58,51 @@
                         <div class="inner">
                             <h2>1. Detection Module</h2>
                             <p>This snippet demonstrates how we initialize the computer vision node to identify the ball using color filtering and contour detection.</p>
-                            
+                            <h4>Grip and Manipulation</h4>
+
+<p>This section describes how the robot physically interacts with the object once it has been detected and approached. The manipulation pipeline includes arm path planning, inverse kinematics–based joint control, and gripper actuation using servo motors. Unlike the driving and perception system, which operates primarily in the planar workspace, manipulation requires careful coordination in 3D space to ensure accurate positioning and reliable grasping.</p>
+
+<p>The gripping system was designed to be modular and deterministic. Rather than relying on continuous visual servoing during grasp execution, the arm follows a structured sequence of predefined waypoints that guide it from a safe resting position to the final grasp pose. This approach simplifies control and increases robustness under real-world conditions.</p>
+
+<h4>Arm Path Planning</h4>
+
+<p>Arm motion is planned as a sequence of discrete poses rather than a single continuous trajectory. This design choice allows the robot to pause at key locations, reassess object position, and reduce the likelihood of collisions or misalignment.</p>
+
+<p>The full trajectory is divided into four waypoints:</p>
+
+<h4>Overhead Detection Position</h4>
+
+<p>The arm first moves to an overhead pose that places the camera at its highest vantage point. This position is specifically chosen to maximize visibility of the object while minimizing occlusions from the arm itself. By separating detection from grasp execution, the system ensures that object localization is as accurate as possible before committing to motion.</p>
+
+<h4>Midpoint Re-Evaluation Position</h4>
+
+<p>After initial detection, the arm moves to an intermediate midpoint pose. At this location, the system re-evaluates the object’s position to account for any residual error from perception or robot motion. This step significantly improves grasp precision, especially when small localization errors could otherwise accumulate.</p>
+
+<h4>Grasping Position</h4>
+
+<p>The final grasping pose places the end effector directly above the object with a predefined offset along the z-axis. This offset ensures that the gripper approaches the object from above rather than colliding laterally. The pose is carefully chosen to align the gripper with the object’s center of mass, increasing grasp stability.</p>
+
+<h4>Home Position</h4>
+
+<p>Once the grasp is complete, the arm returns to a home position. This resets the system to a known, safe configuration and prepares it for subsequent tasks or shutdown.</p>
+
+<h4>Inverse Kinematics and Arm Motion</h4>
+
+<p>At each waypoint, the desired end-effector pose is converted into joint angles using the provided inverse kinematics (IK) solver. This abstraction allows the system to reason in task space rather than joint space, simplifying motion planning and improving readability.</p>
+
+<p>The arm is controlled using twist commands published at 20 Hz, enabling smooth and continuous motion between poses. By maintaining a fixed update rate, the system avoids abrupt joint movements and reduces mechanical stress on the actuators. Each waypoint is reached sequentially, and motion only proceeds once the current pose has been achieved within tolerance.</p>
+
+<h4>Gripper Actuation</h4>
+
+<p>Once the arm reaches the final grasping pose, the gripper is actuated to secure the object. The gripper is controlled using PWM signals sent to servo motors, with fixed duty cycles corresponding to open and closed positions. This simple control scheme was sufficient for the task, as the object geometry and required grip force were known in advance.</p>
+
+<p>A short delay is introduced after issuing a gripper command to allow time for mechanical motion to complete. This prevents premature transitions and ensures the object is fully secured before the arm moves away from the grasping pose.</p>
+
+<h4>System Integration and Reliability</h4>
+
+<p>The gripping pipeline is tightly integrated with perception and navigation but remains logically separate. Detection and approach are completed before manipulation begins, reducing system coupling and simplifying debugging. By relying on predefined arm waypoints and IK-based control, the manipulation system behaves predictably across repeated trials.</p>
+
+<p>Overall, this approach prioritizes reliability and clarity over aggressive optimization. While more advanced techniques such as continuous visual servoing could further improve precision, the implemented solution proved robust and well-suited to the scope of the project.</p>
                             <div class="code-wrapper">
 <pre><code><span class="comment"># Detection Node Snippet (Python / ROS2)</span>
 import cv2
