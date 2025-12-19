@@ -106,6 +106,59 @@
             </div>
         </section>
 
+      <section class="wrapper style1 align-center" id="detection">
+        <div class="inner">
+          <h3>Computer Vision Model</h2>
+          <p>
+            With three vision sensors onboard—a base camera, an arm-mounted camera, 
+            and a LiDAR—we had multiple options for detecting and localizing objects 
+            relative to the robot. However, due to the LiDAR's mounting height, it 
+            proved ineffective for depth estimation of ground-level objects. Furthermore, 
+            our task centered on object-relative manipulation rather than environment 
+            navigation. We employed direct visual feedback from the cameras to detect 
+            and localize objects relative to the robot's current position, eliminating 
+            the need for persistent mapping or SLAM capabilities. We utilized both 
+            cameras in a complementary manner: the base camera for initial object 
+            detection and coarse robot positioning, and the arm-mounted camera for 
+            providing close-range visual feedback during precise manipulation and 
+            pickup operations.
+          </p>
+
+          
+          <h3>Image Processing Pipeline</h2>
+          <p>
+            The perception pipeline begins with processing raw RGB images from
+            the onboard camera that are published to the default Innate topics. 
+            To ensure robust detection, we perform a series of operations:
+            1. convert the image to <strong>grayscale</strong> given a white object 
+            2. apply a <strong>white intensity threshold</strong> to only account for white objects
+            3. <strong>plane filtering</strong> to mask out the upper half of the image, ignoring background noise
+            4. <strong>morphological operations</strong> (erosion-dilation) to remove noise and smooth object's silhouette
+          </p>
+
+          <div class="box alt content-align-center orient-center">
+            <div class="row gtr-50 uniform">
+              <div class="col-6">
+                <div class="image fit">
+                  <img src="images/normal_vision.png" alt="Raw Camera Feed" />
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="image fit">
+                  <img
+                    src="images/object_detect.png"
+                    alt="Threshold & Masked"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+          <p>
+            Once the filtering is processed, we use the built in contour function 
+            of the opencv model to detect the object, which can then be used 
+            for localisation.
+          </p>
+        </div>
         <section class="wrapper style1 align-center" id="detection">
             <div class="inner">
                 <h2>1. Image Processing Pipeline</h2>
@@ -169,6 +222,16 @@ def detect_white_object(self, image, camera_params, camera_name="unknown"):
                 </div>
         </section>
 
+      <section class="wrapper style1 align-center" id="localization">
+        <div class="inner">
+          <h3>Localization & Depth Estimation</h3>
+          <p>
+            Once the contour is found, we calculate the
+            <strong>centroid</strong> using image moments, which is more stable
+            than using a simple bounding box. Depth is estimated using
+            <strong>similar triangles</strong> based on the object's known
+            real-world size and its apparent pixel size.
+          </p>
         <section class="wrapper style1 align-center" id="localization">
             <div class="inner">
                 <h3>2. Localization & Depth Estimation</h3>
@@ -192,6 +255,8 @@ def detect_white_object(self, image, camera_params, camera_name="unknown"):
                 </p>
             </div>
 
+        <!-- <div class="code-wrapper">
+          <pre><code class="language-python"># From detect_object.py
             <div class="code-wrapper">
                 <pre><code class="language-python"># From detect_object.py
 
@@ -209,9 +274,29 @@ distance = (self.object_real_size * f) / pixel_size if pixel_size > 0 else 0
 x_norm = (cx - camera_params['cx']) / camera_params['fx']
 y_norm = (cy - camera_params['cy']) / camera_params['fy']
 point_3d = np.array([x_norm * distance, y_norm * distance, distance])</code></pre>
+        </div> -->
+      </section>
             </div>
         </section>
 
+      <section class="wrapper style1 align-center" id="visualization">
+        <div class="inner">
+          <h3>Real-Time Visualization (Foxglove)</h3>
+          <p>
+            For remote visualization from our Windows development machine, we utilized
+            Foxglove Studio, a web-based tool that provides cross-platform ROS2 
+            compatibility without requiring native installations. However, transmitting
+            raw camera feeds over WiFi proved problematic, consuming over 100 MB/s of 
+            bandwidth and causing significant lag.
+          </p>
+          <p>
+            To address this, we implemented custom debug image publishers that overlay
+            detection data (contours, distances, and detection zones) directly onto 
+            the camera feeds before <strong>compressing to JPEG format</strong>. This 
+            reduced bandwidth to approximately 7 MB/s, enabling real-time visualization
+            of the robot's perception and decision-making without network congestion.
+          </p>
+        </div>
         <section class="wrapper style1 align-center" id="visualization">
             <div class="inner">
                 <h3>3. Real-Time Visualization (Foxglove)</h3>
