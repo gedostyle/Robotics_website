@@ -66,7 +66,31 @@ For this task, LiDAR-based perception was intentionally omitted. Since the envir
 <p>Because thresholding alone produces noisy results, we apply a sequence of morphological operations to refine the binary image. Erosion followed by dilation removes small external artifacts and background noise, while dilation followed by erosion fills gaps within the object’s silhouette. This two-stage approach ensures that the detected object forms a clean, continuous region suitable for contour extraction.</p>
 
 <p>Additional plane filtering is used to reject detections that do not lie on the expected ground plane, further improving robustness. After filtering, contour detection is performed, and the largest valid contour is selected as the target object.</p>
+<div class="code-wrapper">
+<pre><code># From detect_object.py
 
+def detect_white_object(self, image, camera_params, camera_name="unknown"):
+    """
+    Detect white objects in image using thresholding and morphological operations.
+    """
+    # Convert to grayscale
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    
+    # Threshold to find white objects
+    _, binary = cv2.threshold(gray, self.white_threshold, 255, cv2.THRESH_BINARY)
+    
+    # FILTER: Masking (Base camera ignores upper half of image)
+    if camera_name == "BASE":
+        # Only look at lower half for ground objects
+        mask = np.zeros_like(binary)
+        mask[h_img//2:, :] = 255  # Only bottom half
+        binary = cv2.bitwise_and(binary, mask)
+    
+    # Morphological operations to remove noise
+    kernel = np.ones((5, 5), np.uint8)
+    binary = cv2.morphologyEx(binary, cv2.MORPH_OPEN, kernel)  # Erosion -> Dilation
+    binary = cv2.morphologyEx(binary, cv2.MORPH_CLOSE, kernel) # Dilation -> Erosion</code></pre>
+</div>
 <h4>Identifying Object Coordinates</h4>
 
 <p>Once the target contour is identified, its centroid is computed using the midpoint of the contour’s maximum width and height in image space. This centroid provides the object’s pixel location in the camera frame.</p>
