@@ -71,42 +71,38 @@
 		</section>
 
 		<!-- Two -->
-		<section class="spotlight style1 orient-right content-align-left image-position-center onscroll-image-fade-in"
-			id="first">
-			<div class="content">
-				<h2>Objective of our project</h2>
-				<p>As a fun tech demo we decided to make the robot play catch with a ball. For this we need to make use
-					every given component of the MARS robot and the main components of our effort can be found on this
-					website. If you want to see the details of the code, feel free to visit our GitHub repository as
-					well.</p>
-				<ul class="actions vertical">
-					<li><a href="https://github.com/siddharths09/EECS206A-FinalProject.git" target="_blank"
-							rel="noopener noreferrer" class="button">GitHub Repo</a></li>
-				</ul>
-			</div>
-			<div class="image">
-				<img src="images/Gemini_Generated_Image_qvdwloqvdwloqvdw.png" alt="Mars playing ball" />
-			</div>
-		</section>
+		<section class="spotlight style1 orient-right content-align-left image-position-center onscroll-image-fade-in" id="first">
+    <div class="content">
+        <h2>Objective of our project</h2>
+        <p>As a fun tech demo we decided to make the robot play catch with a ball. For this we need to make use
+            every given component of the MARS robot and the main components of our effort can be found on this
+            website. If you want to see the details of the code, feel free to visit our GitHub repository as
+            well.</p>
+        
+        <ul class="actions">
+            <li><a href="challenges.html" class="button">Project Challenges</a></li>
+            <li><a href="https://github.com/siddharths09/EECS206A-FinalProject.git" target="_blank"
+                    rel="noopener noreferrer" class="button">GitHub Repo</a></li>
+        </ul>
+    </div>
+    <div class="image">
+        <img src="images/Gemini_Generated_Image_qvdwloqvdwloqvdw.png" alt="Mars playing ball" />
+    </div>
+</section>
 
 		<!-- Three -->
-		<section class="spotlight style1 orient-left content-align-left image-position-center onscroll-image-fade-in"
-			id="detect">
-			<div class="content">
-				<h2>Drive</h2>
-				<p>Initally we had to learn how to <strong>generally interact</strong> with the new innate platform. We
-					started off with <strong>teleoperation</strong> and soon moved on to moving the robot a certain
-					distance x. After some debugging we were able to complete to these tasks and we went onto path
-					planning. This required us to write a <strong>depth perception script</strong> for the robots
-					cameras, since this package did not exist before. </p>
-				<ul class="actions vertical">
-					<li><a href="code-snippet-vissionAperception.html" class="button">Learn more</a></li>
-				</ul>
-			</div>
-			<div class="image">
-				<img src="images/spotlight02.jpg" alt="" />
-			</div>
-		</section>
+		<section class="spotlight style1 orient-left content-align-left image-position-center onscroll-image-fade-in" id="detect">
+    <div class="content">
+        <h2>Vision & Perception</h2>
+        <p>To interact with the world, the robot first needs to see it. We developed a custom <strong>computer vision pipeline</strong> using OpenCV to compensate for the lack of native detection tools. Our system uses <strong>morphological filtering</strong> and <strong>contour detection</strong> to isolate objects from the background, while a custom <strong>Foxglove visualization</strong> allows us to debug the robot's perception logic in real-time.</p>
+        <ul class="actions vertical">
+            <li><a href="code-snippet-vissionAperception.html" class="button">Learn more</a></li>
+        </ul>
+    </div>
+    <div class="image">
+        <img src="images/innate_eyes.png" alt="Computer Vision Processing" />
+    </div>
+</section>
 
 		<!-- Four -->
 		<section class="spotlight style1 orient-right content-align-left image-position-center onscroll-image-fade-in"
