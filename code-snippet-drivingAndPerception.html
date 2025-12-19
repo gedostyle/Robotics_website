@@ -5,7 +5,7 @@
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="stylesheet" href="assets/css/main.css" />
-        
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
         <style>
             /* This ensures the code block is centered but the text inside is left-aligned */
             .code-wrapper {
@@ -38,7 +38,8 @@
         </style>
     </head>
     <body>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
         <div id="wrapper" class="divided">
 
                 <section class="banner style1 orient-center content-align-center image-position-center onload-image-fade-in onload-content-fade-right">
@@ -59,38 +60,38 @@ For this task, LiDAR-based perception was intentionally omitted. Since the envir
                 <section class="wrapper style1 align-center" id="detection">
                         <div class="inner">
                             <h2>1. Detection and Image Processing</h2>
-                            <h4>Detection and Image Processing</h4>
+                            {# <h4>Detection and Image Processing</h4> #}
 
 <p>The perception pipeline begins with processing images from the onboard camera to identify the target object. The raw RGB image is first converted to grayscale, reducing noise and simplifying subsequent filtering steps. A white intensity threshold is then applied to isolate the ball from the background.</p>
 
 <p>Because thresholding alone produces noisy results, we apply a sequence of morphological operations to refine the binary image. Erosion followed by dilation removes small external artifacts and background noise, while dilation followed by erosion fills gaps within the object’s silhouette. This two-stage approach ensures that the detected object forms a clean, continuous region suitable for contour extraction.</p>
 
 <p>Additional plane filtering is used to reject detections that do not lie on the expected ground plane, further improving robustness. After filtering, contour detection is performed, and the largest valid contour is selected as the target object.</p>
-<div class="code-wrapper">
-<pre><code># From detect_object.py
+    <div class="code-wrapper">
+    <pre><code lass="language-python"># From detect_object.py
 
-def detect_white_object(self, image, camera_params, camera_name="unknown"):
-    """
-    Detect white objects in image using thresholding and morphological operations.
-    """
-    # Convert to grayscale
-    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    
-    # Threshold to find white objects
-    _, binary = cv2.threshold(gray, self.white_threshold, 255, cv2.THRESH_BINARY)
-    
-    # FILTER: Masking (Base camera ignores upper half of image)
-    if camera_name == "BASE":
-        # Only look at lower half for ground objects
-        mask = np.zeros_like(binary)
-        mask[h_img//2:, :] = 255  # Only bottom half
-        binary = cv2.bitwise_and(binary, mask)
-    
-    # Morphological operations to remove noise
-    kernel = np.ones((5, 5), np.uint8)
-    binary = cv2.morphologyEx(binary, cv2.MORPH_OPEN, kernel)  # Erosion -> Dilation
-    binary = cv2.morphologyEx(binary, cv2.MORPH_CLOSE, kernel) # Dilation -> Erosion</code></pre>
-</div>
+    def detect_white_object(self, image, camera_params, camera_name="unknown"):
+        """
+        Detect white objects in image using thresholding and morphological operations.
+        """
+        # Convert to grayscale
+        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        
+        # Threshold to find white objects
+        _, binary = cv2.threshold(gray, self.white_threshold, 255, cv2.THRESH_BINARY)
+        
+        # FILTER: Masking (Base camera ignores upper half of image)
+        if camera_name == "BASE":
+            # Only look at lower half for ground objects
+            mask = np.zeros_like(binary)
+            mask[h_img//2:, :] = 255  # Only bottom half
+            binary = cv2.bitwise_and(binary, mask)
+        
+        # Morphological operations to remove noise
+        kernel = np.ones((5, 5), np.uint8)
+        binary = cv2.morphologyEx(binary, cv2.MORPH_OPEN, kernel)  # Erosion -> Dilation
+        binary = cv2.morphologyEx(binary, cv2.MORPH_CLOSE, kernel) # Dilation -> Erosion</code></pre>
+    </div>
 <h4>Identifying Object Coordinates</h4>
 
 <p>Once the target contour is identified, its centroid is computed using the midpoint of the contour’s maximum width and height in image space. This centroid provides the object’s pixel location in the camera frame.</p>
