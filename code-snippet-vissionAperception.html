@@ -127,14 +127,16 @@
           
           <h3>Image Processing Pipeline</h2>
           <p>
-            The perception pipeline begins with processing raw RGB images from
-            the onboard camera that are published to the default Innate topics. 
-            To ensure robust detection, we perform a series of operations:
-            1. convert the image to <strong>grayscale</strong> given a white object 
-            2. apply a <strong>white intensity threshold</strong> to only account for white objects
-            3. <strong>plane filtering</strong> to mask out the upper half of the image, ignoring background noise
-            4. <strong>morphological operations</strong> (erosion-dilation) to remove noise and smooth object's silhouette
-          </p>
+              The perception pipeline begins with processing raw RGB images from
+              the onboard camera that are published to the default Innate topics. 
+              To ensure robust detection, we perform a series of operations:
+            </p>
+            <ol>
+              <li>Convert the image to <strong>grayscale</strong> given a white object</li>
+              <li>Apply a <strong>white intensity threshold</strong> to only account for white objects</li>
+              <li><strong>Plane filtering</strong> to mask out the upper half of the image, ignoring background noise</li>
+              <li><strong>Morphological operations</strong> (erosion-dilation) to remove noise and smooth the object's silhouette</li>
+            </ol>
 
  
           <p>
@@ -143,45 +145,9 @@
             for localisation.
           </p>
         </div>
-        <section class="wrapper style1 align-center" id="detection">
-            <div class="inner">
-                <h2>1. Image Processing Pipeline</h2>
-                <p>
-                    The perception pipeline begins with processing raw RGB images from
-                    the onboard camera. To ensure robust detection, we convert the image
-                    to grayscale and apply a white intensity threshold. Since the robot
-                    operates in a known environment, we use
-                    <strong>plane filtering</strong> to mask out the upper half of the
-                    image, ignoring background noise above the ground plane.
-                </p>
-                <div class="image fit" style="display: block; max-width: 600px; margin: 0 auto">
-                            <div class="col-6">
-                                <div class="image fit">
-                                    <img src="images/normal_vision.png" alt="Raw Camera Feed" />
-                                </div>
-                            </div>
-                        </div>
-                 
-                    <div class="image fit" style="display: block; max-width: 600px; margin: 0 auto">
-                                <div class="col-6">
-                                    <div class="image fit">
-                                        <img src="images/object_detect.png" alt="Threshold & Masked" />
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                
 
-                    <p>
-                        We then apply a sequence of
-                        <strong>morphological operations</strong> (erosion followed by
-                        dilation) to remove small artifacts and smooth the object's
-                        silhouette before performing contour detection.
-                    </p>
-                </div>
-
-                <div class="code-wrapper">
-                    <pre><code class="language-python"># From detect_object.py
+        <div class="code-wrapper">
+            <pre><code class="language-python"># From detect_object.py
 
 def detect_white_object(self, image, camera_params, camera_name="unknown"):
     # Convert to grayscale
@@ -216,27 +182,28 @@ def detect_white_object(self, image, camera_params, camera_name="unknown"):
             <strong>similar triangles</strong> based on the object's known
             real-world size and its apparent pixel size.
           </p>
-        <section class="wrapper style1 align-center" id="localization">
-            <div class="inner">
-                <h3>2. Localization & Depth Estimation</h3>
-                <p>
-                    Once the contour is found, we calculate the
-                    <strong>centroid</strong> using image moments, which is more stable
-                    than using a simple bounding box. Depth is estimated using
-                    <strong>similar triangles</strong> based on the object's known
-                    real-world size and its apparent pixel size.
-                </p>
-
+          <p>
+            Finally, we project the 2D pixel coordinates into a 3D position
+            vector (x, y, z) in the camera frame. This 3D pose is published to
+            ROS topics to be used by the motion planner.
+          </p>
+        </div>
+        <div class="image fit" style="display: block; max-width: 600px; margin: 0 auto">
+                        <div class="col-6">
+                            <div class="image fit">
+                                <img src="images/normal_vision.png" alt="Raw Camera Feed" />
+                            </div>
+                        </div>
+                    </div>
+             
                 <div class="image fit" style="display: block; max-width: 600px; margin: 0 auto">
-                    <img src="images/object_detect.png" alt="Object detection with bounding box and distance text"
-                        style="width: 100%; height: auto" />
-                </div>
-
-                <p>
-                    Finally, we project the 2D pixel coordinates into a 3D position
-                    vector (x, y, z) in the camera frame. This 3D pose is published to
-                    ROS topics to be used by the motion planner.
-                </p>
+                            <div class="col-6">
+                                <div class="image fit">
+                                    <img src="images/object_detect.png" alt="Threshold & Masked" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
             </div>
 
         <!-- <div class="code-wrapper">
@@ -280,22 +247,7 @@ point_3d = np.array([x_norm * distance, y_norm * distance, distance])</code></pr
             reduced bandwidth to approximately 7 MB/s, enabling real-time visualization
             of the robot's perception and decision-making without network congestion.
           </p>
-        </div>
-        <section class="wrapper style1 align-center" id="visualization">
-            <div class="inner">
-                <h3>3. Real-Time Visualization (Foxglove)</h3>
-                <p>
-                    Since the robot operates wirelessly, transmitting raw video feeds
-                    consumes too much bandwidth. To solve this, we implemented a custom
-                    debug publisher that overlays detection data (contours, distance,
-                    and detection zones) onto the image.
-                </p>
-                <p>
-                    The image is then <strong>compressed to JPEG</strong> before being
-                    published. This allows us to visualize the robot's "thought process"
-                    in real-time using Foxglove Studio without lagging the network.
-                </p>
-            </div>
+      </div>
 
             <div class="code-wrapper">
                 <pre><code class="language-python"># From detect_object.py
