@@ -11,7 +11,7 @@
     />
 
     <style>
-      /* --- Layout & Typography (Consistent with other pages) --- */
+      /* --- Layout & Typography --- */
       .align-center p,
       .align-center ul,
       .align-center ol {
@@ -73,12 +73,14 @@
         class="banner style1 orient-center content-align-center image-position-center onload-image-fade-in onload-content-fade-right"
       >
         <div class="content">
-          <h1>Actuation & Manipulation</h1>
+          <h1>Full System Actuation</h1>
           <p class="major">
-            While driving operates in a 2D plane, manipulation requires precise
-            control in 3D space. This page details the state machine designed
-            for reliable pick-and-place operations, the Inverse Kinematics (IK)
-            used to position the arm, and the PWM control of the gripper.
+            This page details the complete control stack of the MARS robot. From
+            the <strong>Closed-Loop Driving Controller</strong> that tracks
+            trajectories, to the
+            <strong>Manipulation State Machine</strong> that orchestrates
+            complex arm movements, and finally the
+            <strong>PWM Gripper Control</strong> for physical interaction.
           </p>
           <ul class="actions vertical">
             <li>
@@ -91,153 +93,169 @@
           </ul>
         </div>
         <div class="image">
-          <img src="images/actuation.JPG" alt="MARS Robot Arm in action" />
+          <img src="images/actuation.jpg" alt="Robot driving and grasping" />
         </div>
       </section>
 
-      <section class="wrapper style1 align-center" id="statemachine">
+      <section class="wrapper style1 align-center" id="driving">
         <div class="inner">
-          <h2>1. The Manipulation State Machine</h2>
+          <h2>1. Driving Control (Base Actuation)</h2>
           <p>
-            To ensure reliability and safety, the arm does not move directly
-            from its resting position to the object. Instead, it follows a
-            strict <strong>multi-stage trajectory</strong> governed by a state
-            machine. This approach prevents collisions, allows for re-evaluation
-            of the target position, and ensures the gripper approaches the
-            object vertically.
+            The robot's base is a differential drive system. To achieve smooth,
+            human-like motion, we do not simply send "go" commands. Instead, we
+            implemented a
+            <strong>Closed-Loop Controller running at 20Hz</strong>.
           </p>
-
-          <div class="box alt">
-            <div class="row gtr-50 uniform">
-              <div class="col-12">
-                <span class="image fit"
-                  ><img
-                    src="images/state_machine_diagram_placeholder.jpg"
-                    alt="State Machine Flowchart"
-                /></span>
-              </div>
-            </div>
-          </div>
-
-          <p>The sequence is designed as follows:</p>
-          <ul>
-            <li>
-              <strong>Move to Overhead:</strong> Lifts the arm high to get a
-              clear, unobstructed view from the arm camera.
-            </li>
-            <li>
-              <strong>Position Above Object:</strong> Uses updated vision data
-              to move directly over the target.
-            </li>
-            <li>
-              <strong>Lower to Object:</strong> Slowly descends along the Z-axis
-              to engage the object.
-            </li>
-            <li>
-              <strong>Close Gripper & Return to Rest:</strong> Secures the
-              object and moves to a safe carrying pose.
-            </li>
-          </ul>
+          <p>
+            This controller continuously compares the robot's current heading
+            (from Odometry/TF) against the desired Bézier waypoint. It
+            calculates error and outputs precise velocity commands (<code
+              >Twist</code
+            >
+            messages) to the <code>/cmd_vel</code> topic. We also implemented a
+            <strong>Low-Pass Filter</strong> on the angular velocity to prevent
+            wheel slip and mechanical oscillation.
+          </p>
         </div>
 
         <div class="code-wrapper">
-          <pre><code class="language-python"># From arm_movement.py
+          <pre><code class="language-python"># From move_to_object.py: Control Loop
+
+def control_loop(self):
+    """Executes at 20Hz to drive the robot"""
+    # 1. Get current pose from TF
+    pose = self.get_current_pose()
+    
+    # 2. Calculate Heading Error to target waypoint
+    angle_to_target = math.atan2(dy, dx)
+    angle_error = self.normalize_angle(angle_to_target - pose.yaw)
+    
+    # 3. Apply Low-Pass Filter (Smooths the turn)
+    raw_angular_vel = self.kp_angular * angle_error
+    self.filtered_angular_vel = (self.alpha * raw_angular_vel) + ((1 - self.alpha) * self.filtered_angular_vel)
+    
+    # 4. Publish Velocity
+    twist = Twist()
+    twist.linear.x = linear_vel
+    twist.angular.z = self.filtered_angular_vel
+    self.cmd_vel_pub.publish(twist)</code></pre>
+        </div>
+      </section>
+
+      <section class="wrapper style1 align-center" id="arm-logic">
+        <div class="inner">
+          <h2>2. Arm Logic: The State Machine</h2>
+
+          <p>
+            Unlike the base, the arm requires discrete logic states to operate
+            safely. We cannot simply "move to the ball" because the arm might
+            collide with the object or block the camera view. We implemented a
+            <strong>Finite State Machine (FSM)</strong> to strictly enforce the
+            sequence of operations.
+          </p>
+
+          <div class="box alt">
+            <span class="image fit"
+              ><img src="images/fsm.jpg" alt="Arm State Machine Logic"
+            /></span>
+          </div>
+
+          <p>
+            The system transitions through specific states: first moving to an
+            <strong>Overhead</strong> position to verify the object location,
+            then descending vertically to <strong>Grasp</strong>, and finally
+            retracting to a <strong>Home</strong> pose.
+          </p>
+        </div>
+
+        <div class="code-wrapper">
+          <pre><code class="language-python"># From arm_movement.py: State Machine Definitions
 
 class GraspState(Enum):
     IDLE = 0
-    OPEN_GRIPPER = 1
-    MOVE_TO_OVERHEAD = 2
-    WAIT_FOR_OVERHEAD_MOTION = 3
-    SETTLE_AT_OVERHEAD = 4
-    WAIT_FOR_ARM_CAMERA_DETECTION = 5
-    POSITION_ABOVE_OBJECT = 6
-    WAIT_FOR_ABOVE_MOTION = 7
-    LOWER_TO_OBJECT = 8
-    WAIT_FOR_LOWER_MOTION = 9
-    CLOSE_GRIPPER = 10
-    RETURN_TO_REST = 11</code></pre>
+    [cite_start]MOVE_TO_OVERHEAD = 2       # Lift arm to clear camera view [cite: 89]
+    [cite_start]POSITION_ABOVE_OBJECT = 6  # Align XY coordinates [cite: 90]
+    [cite_start]LOWER_TO_OBJECT = 8        # Vertical Z descent [cite: 91]
+    CLOSE_GRIPPER = 10         # Actuate end-effector
+    [cite_start]RETURN_TO_REST = 11        # Safe transport pose [cite: 92]
+
+def update_arm_state(self):
+    """ Transitions states based on motion completion flags """
+    if self.state == GraspState.MOVE_TO_OVERHEAD and self.motion_complete:
+        self.state = GraspState.POSITION_ABOVE_OBJECT
+        self.motion_complete = False</code></pre>
         </div>
       </section>
 
       <section class="wrapper style1 align-center" id="ik">
         <div class="inner">
-          <h3>2. Inverse Kinematics & Coordinate Transforms</h3>
+          <h3>3. Actuating the Joints (Inverse Kinematics)</h3>
           <p>
-            The vision system provides the object's location relative to the
-            camera. To grab it, we must know its location relative to the arm's
-            base.
+            To move the arm to a specific 3D coordinate (x, y, z), we must
+            calculate the required angles for all 5 joints. [cite_start]We use
+            an <strong>Inverse Kinematics (IK) Solver</strong> that takes the
+            target coordinate in the base frame and outputs the necessary joint
+            configurations.
           </p>
+
           <p>
-            We perform a <strong>coordinate transformation</strong>, taking the
-            object's position in the camera frame (detected in the previous
-            step) and adjusting it based on the arm's current end-effector
-            position. This calculated 3D point is then passed to the robot's
-            <strong>Inverse Kinematics (IK) solver</strong>, which determines
-            the exact joint angles required to reach that point.
+            These joint targets are published to the
+            <code>/joint_states</code> topic, which the lower-level hardware
+            drivers use to move the servos.
           </p>
         </div>
 
         <div class="code-wrapper">
-          <pre><code class="language-python"># From arm_movement.py
+          <pre><code class="language-python"># From arm_movement.py: Kinematics
 
-def calculate_object_position_in_base(self):
-    # Transform object from Arm Camera frame to Base Link frame
-    cam_x = self.arm_camera_detection.point.x
-    cam_y = self.arm_camera_detection.point.y
-    cam_z = self.arm_camera_detection.point.z
+def move_arm_to_coords(self, x, y, z):
+    """Calculates joint angles for a target 3D point"""
     
-    # Current arm end-effector position
-    ee_x = self.current_pose.pose.position.x
-    ee_y = self.current_pose.pose.position.y
-    ee_z = self.current_pose.pose.position.z
+    # 1. Transform Camera Detection -> Base Frame
+    target_base = self.transform_camera_to_base(x, y, z)
     
-    # Calculate global position (Camera is pointing down)
-    # cam_z gives vertical offset, cam_x/y give horizontal offset relative to EE
-    obj_x = ee_x + cam_x  
-    obj_y = ee_y - cam_y 
-    obj_z = ee_z - cam_z  
+    # 2. Solve IK
+    joint_angles = self.ik_solver.calculate_ik(target_base.x, target_base.y, target_base.z)
     
-    return (obj_x, obj_y, obj_z)</code></pre>
+    # 3. Publish to hardware
+    msg = JointState()
+    msg.position = joint_angles
+    self.joint_pub.publish(msg)</code></pre>
         </div>
       </section>
 
       <section class="wrapper style1 align-center" id="gripper">
         <div class="inner">
-          <h3>3. Gripper Actuation</h3>
+          <h2>4. End-Effector (Gripper) Actuation</h2>
           <p>
-            Once the arm is in position, the final step is physical interaction.
-            The gripper is controlled via
-            <strong>PWM (Pulse Width Modulation)</strong> signals sent to servo
-            motors. We defined specific duty cycles corresponding to the "fully
-            open" and "closed" positions required to grasp the paper ball
-            securely.
+            The final stage of actuation is physical interaction.
+            [cite_start]The gripper is driven by a servo motor controlled via
+            <strong>Pulse Width Modulation (PWM)</strong> signals. We determined
+            specific duty cycles corresponding to the "Open" (7.5) and "Closed"
+            (12.5) positions to ensure a firm grasp on the paper ball.
           </p>
 
           <div class="box alt">
             <span class="image fit" style="max-width: 600px; margin: 0 auto">
-              <img
-                src="images/gripper_action_placeholder.gif"
-                alt="Gripper opening and closing GIF"
-              />
+              <img src="images/gripper.GIF" alt="Gripper Closing Action" />
             </span>
           </div>
         </div>
 
         <div class="code-wrapper">
-          <pre><code class="language-python"># From arm_movement.py
+          <pre><code class="language-python"># From arm_movement.py: Servo Control
 
 def activate_gripper(state):
+    """Direct PWM control of the gripper servo"""
     if state == "OPEN":
-        # Neutral/Open position duty cycle
+        # Neutral position (0 degrees)
         pwm.set_duty_cycle(SERVO_PIN, 7.5) 
-        logger.info("Gripper Opening...")
         
     elif state == "CLOSE":
-        # Closed position duty cycle
+        # 180 degree position (Fully clamped)
         pwm.set_duty_cycle(SERVO_PIN, 12.5) 
-        logger.info("Gripper Closing...")
         
-    # Allow time for mechanical movement to complete before proceeding
+    # Block thread to ensure mechanical completion
     time.sleep(1.0)</code></pre>
         </div>
       </section>

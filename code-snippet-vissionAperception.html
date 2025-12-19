@@ -107,17 +107,21 @@
             <strong>plane filtering</strong> to mask out the upper half of the
             image, ignoring background noise above the ground plane.
           </p>
-          <div class="box alt">
+
+          <div class="box alt content-align-center orient-center">
             <div class="row gtr-50 uniform">
               <div class="col-6">
-                <span class="image fit"
-                  ><img src="images/normal_vision.png" alt="Raw Camera Feed"
-                /></span>
+                <div class="image fit">
+                  <img src="images/normal_vision.png" alt="Raw Camera Feed" />
+                </div>
               </div>
               <div class="col-6">
-                <span class="image fit"
-                  ><img src="images/object_detect.png" alt="Threshold & Masked"
-                /></span>
+                <div class="image fit">
+                  <img
+                    src="images/object_detect.png"
+                    alt="Threshold & Masked"
+                  />
+                </div>
               </div>
             </div>
           </div>
@@ -165,13 +169,17 @@ def detect_white_object(self, image, camera_params, camera_name="unknown"):
             <strong>similar triangles</strong> based on the object's known
             real-world size and its apparent pixel size.
           </p>
-          <span class="image fit" style="max-width: 600px; margin: 0 auto">
+
+          <div
+            class="image fit"
+            style="display: block; max-width: 600px; margin: 0 auto"
+          >
             <img
               src="images/object_detect.png"
               alt="Object detection with bounding box and distance text"
               style="width: 100%; height: auto"
             />
-          </span>
+          </div>
 
           <p>
             Finally, we project the 2D pixel coordinates into a 3D position

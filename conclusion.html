@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Conclusion - MARS Robot Project</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="assets/css/main.css" />
+  </head>
+  <body>
+    <div id="wrapper" class="divided">
+      <section
+        class="banner style1 orient-center content-align-center image-position-center onload-image-fade-in onload-content-fade-right"
+      >
+        <div class="content">
+          <h1>Conclusion & Reflection</h1>
+          <p class="major">
+            From an ambitious pet feeder to a robust autonomous retrieval
+            system. This project was a lesson in hardware reality, requiring us
+            to pivot, adapt, and engineer creative solutions to bridge the gap
+            between theory and the physical world.
+          </p>
+          <ul class="actions vertical">
+            <li>
+              <a href="index.html" class="button big wide smooth-scroll-middle"
+                >Return to Home</a
+              >
+            </li>
+          </ul>
+        </div>
+        <div class="image">
+          <img src="images/Conclusion.JPG" alt="Innate Robot Conclusion" />
+        </div>
+      </section>
+
+      <section class="wrapper style1 align-center">
+        <div class="inner">
+          <h2>Project Assessment</h2>
+          <p>
+            While we ultimately pivoted away from the granular "Pet Feeder"
+            application due to gripper limitations, our final "Fetch"
+            implementation successfully met all the core technical design
+            criteria. The robot demonstrated
+            <strong>autonomous perception</strong> of a target,
+            <strong>smooth trajectory planning</strong> using Bézier curves, and
+            <strong>multi-stage manipulation</strong> to interact with the
+            environment.
+          </p>
+          <p>
+            The system proved that the Innate Mars platform, despite its
+            documentation gaps and hardware quirks, is capable of complex tasks
+            when governed by a robust software architecture.
+          </p>
+        </div>
+      </section>
+
+      <section class="wrapper style1 align-center gray-bg">
+        <div class="inner">
+          <h2>Limitations & Future Improvements</h2>
+          <p>
+            Given the timeline constraints, several "hacks" were implemented to
+            ensure stability. With additional time, we would address these
+            technical debt items to create a truly production-ready system.
+          </p>
+
+          <div class="items style1 medium onscroll-fade-in">
+            <section>
+              <span class="icon style2 major fa-eye"></span>
+              <h3>Robust Perception</h3>
+              <p>
+                <strong>Current Flaw:</strong> Our vision system relies on
+                simple color thresholding and plane filtering. This makes it
+                sensitive to lighting changes.<br />
+                <strong>Improvement:</strong> Implement machine learning-based
+                object detection (YOLO) and integrate the LiDAR sensor to fuse
+                depth data, allowing detection of non-white objects in complex
+                backgrounds.
+              </p>
+            </section>
+
+            <section>
+              <span class="icon style2 major fa-map-o"></span>
+              <h3>True Localization</h3>
+              <p>
+                <strong>Current Flaw:</strong> The "Return to Base" feature
+                currently relies on simple odometry tracking (reversing distance
+                d), which accumulates drift over time.<br />
+                <strong>Improvement:</strong> Implement SLAM (Simultaneous
+                Localization and Mapping) to allow the robot to navigate back to
+                a specific (x,y) coordinate map, regardless of the path taken.
+              </p>
+            </section>
+
+            <section>
+              <span class="icon style2 major fa-hand-rock-o"></span>
+              <h3>Visual Servoing</h3>
+              <p>
+                <strong>Current Flaw:</strong> The arm moves to a pre-calculated
+                coordinate and grabs blindly. If the robot slips during the
+                approach, the grasp fails.<br />
+                <strong>Improvement:</strong> Implement "Visual Servoing"
+                (closed-loop control), where the arm camera continuously
+                corrects the hand position <em>during</em> the descent phase.
+              </p>
+            </section>
+          </div>
+        </div>
+      </section>
+
+      <footer class="wrapper style1 align-center">
+        <div class="inner">
+          <p>&copy; Intro to Robotics Project.</p>
+        </div>
+      </footer>
+    </div>
+
+    <script src="assets/js/jquery.min.js"></script>
+    <script src="assets/js/jquery.scrollex.min.js"></script>
+    <script src="assets/js/jquery.scrolly.min.js"></script>
+    <script src="assets/js/skel.min.js"></script>
+    <script src="assets/js/util.js"></script>
+    <script src="assets/js/main.js"></script>
+  </body>
+</html>

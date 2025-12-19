@@ -81,7 +81,7 @@
 					well.</p>
 
 				<ul class="actions">
-					<li><a href="challenges.html" class="button">Project Challenges</a></li>
+					<li><a href="challenges.html" class="button">Goal & Challenges</a></li>
 					<li><a href="https://github.com/siddharths09/EECS206A-FinalProject.git" target="_blank"
 							rel="noopener noreferrer" class="button">GitHub Repo</a></li>
 				</ul>
@@ -115,7 +115,7 @@
 			id="grip">
 			<div class="content">
 				<h2>Planning</h2>
-				<p><strong>GET SOME SUMMARY TEXT IN HERE</strong></p>
+				<p>Intelligent motion requires more than just knowing where to go—it requires a strategy for getting there. We implemented a <strong>Bézier curve trajectory generator</strong> to ensure smooth, continuous robot navigation, avoiding the jerky motion of simple point-to-point drivers. For the arm, a <strong>multi-stage planning algorithm</strong> operates in 3D task space, coordinating complex pickup sequences while preventing collisions.</p>
 				<ul class="actions vertical">
 					<li><a href="code-snippet-planning.html" class="button">Learn more</a></li>
 				</ul>
@@ -129,7 +129,7 @@
 			id="assembly">
 			<div class="content">
 				<h2>Actuation</h2>
-				<p><strong>PUT SOME SMART ASS INTRO FOR ACTUATION IN HERE</strong> </p>
+				<p>Execution is just as critical as planning. Our system utilizes a <strong>closed-loop feedback controller</strong> running at 20Hz to precisely track generated trajectories, correcting errors in real-time. The manipulation subsystem orchestrates <strong>5-DOF inverse kinematics</strong> and <strong>PWM-controlled gripping</strong>, ensuring reliable physical interaction with the target object. </p>
 				<ul class="actions vertical">
 					<li><a href="code-snippit-actuation.html" class="button">Learn more</a></li>
 				</ul>
@@ -256,53 +256,30 @@
 					</div>
 				</article>
 				<article>
-					<a href="images/gallery/fulls/09.jpg" class="image">
-						<img src="images/gallery/thumbs/09.jpg" alt="" />
+					<a href="images/DSC04971.JPG" class="image">
+						<img src="images/progress_pics/compressed/DSC04971Medium.jpeg" alt="" />
 					</a>
 					<div class="caption">
-						<h3>Tempus Dolor</h3>
-						<p>Lorem ipsum dolor amet, consectetur magna etiam elit. Etiam sed ultrices.</p>
+						<h3>Christmas spririts</h3>
+						<p></p>
 						<ul class="actions">
 							<li><span class="button small">Details</span></li>
 						</ul>
 					</div>
 				</article>
 				<article>
-					<a href="images/gallery/fulls/10.jpg" class="image">
-						<img src="images/gallery/thumbs/10.jpg" alt="" />
+					<a href="images/spotlight01.jpg" class="image">
+						<img src="images/spotlight01.jpg" alt="" />
 					</a>
 					<div class="caption">
-						<h3>Sed Etiam</h3>
-						<p>Lorem ipsum dolor amet, consectetur magna etiam elit. Etiam sed ultrices.</p>
+						<h3>Here could be our final presentation picture</h3>
+						<p>We hope Prof. Horowitz will release them so we can finalize our project</p>
 						<ul class="actions">
 							<li><span class="button small">Details</span></li>
 						</ul>
 					</div>
 				</article>
-				<article>
-					<a href="images/gallery/fulls/11.jpg" class="image">
-						<img src="images/gallery/thumbs/11.jpg" alt="" />
-					</a>
-					<div class="caption">
-						<h3>Magna Lorem</h3>
-						<p>Lorem ipsum dolor amet, consectetur magna etiam elit. Etiam sed ultrices.</p>
-						<ul class="actions">
-							<li><span class="button small">Details</span></li>
-						</ul>
-					</div>
-				</article>
-				<article>
-					<a href="images/gallery/fulls/12.jpg" class="image">
-						<img src="images/gallery/thumbs/12.jpg" alt="" />
-					</a>
-					<div class="caption">
-						<h3>Ipsum Dolor</h3>
-						<p>Lorem ipsum dolor amet, consectetur magna etiam elit. Etiam sed ultrices.</p>
-						<ul class="actions">
-							<li><span class="button small">Details</span></li>
-						</ul>
-					</div>
-				</article>
+				
 			</div>
 
 		</section>
@@ -335,10 +312,11 @@
 					enviroments.</p>
 				<div class="items style1 medium onscroll-fade-in">
 					<section>
-						<span class="icon style2 major fa-diamond"></span>
-						<h3>Leanring 1</h3>
-						<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi dui turpis, cursus eget orci
-							amet aliquam congue semper. Etiam eget ultrices risus nec tempor elit.</p>
+						<span class="icon style2 major fa-link"></span>
+						<h3>We learned how to make a queue</h3>
+						<p>Instead of using a centralized job queue, we implemented a distributed state machine where
+							each node publishes a completion flag (boolean) to strictly trigger the next step in the
+							processing chain.</p>
 					</section>
 					<section>
 						<span class="icon style2 major fa-image"></span>
@@ -348,17 +326,14 @@
 							noise and shape objects.</p>
 					</section>
 					<section>
-						<span class="icon style2 major fa-bar-chart"></span>
-						<h3>Dolor</h3>
-						<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi dui turpis, cursus eget orci
-							amet aliquam congue semper. Etiam eget ultrices risus nec tempor elit.</p>
+						<span class="icon style2 major fa-paper-plane"></span>
+						<h3>Dynamic Trajectory Planning</h3>
+						<p>Initial long-range detections are often noisy. We implemented a continuous update loop where
+							the planner refines the robot's path in real-time as the perception module generates
+							higher-confidence target coordinates during the approach.</p>
 					</section>
 					<section>
-						<span class="icon style2 major fa-link"></span>
-						<h3>We learned how to make a queue</h3>
-						<p>Instead of using a centralized job queue, we implemented a distributed state machine where
-							each node publishes a completion flag (boolean) to strictly trigger the next step in the
-							processing chain.</p>
+						
 					</section>
 					<section>
 						<span class="icon style2 major fa-compass"></span>
@@ -368,11 +343,7 @@
 							continuously correct the robot's heading.</p>
 					</section>
 					<section>
-						<span class="icon style2 major fa-paper-plane"></span>
-						<h3>Dynamic Trajectory Planning</h3>
-						<p>Initial long-range detections are often noisy. We implemented a continuous update loop where
-							the planner refines the robot's path in real-time as the perception module generates
-							higher-confidence target coordinates during the approach.</p>
+						
 					</section>
 				</div>
 		</section>
@@ -434,103 +405,171 @@
 					/* Adjust icon size if needed */
 					line-height: normal !important;
 				}
+
+				.team-container {
+        /* Optional: Ensures members stack nicely or form a grid depending on screen width */
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 2rem;
+    }
+
+    .team-member {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: 2rem;
+        padding: 2rem; /* Increased padding to prevent clipping */
+        background: rgba(255, 255, 255, 0.05); /* Slight background to frame the member */
+        border-radius: 8px;
+        width: 100%;
+        max-width: 600px; /* Keeps card from getting too wide */
+    }
+
+    .profile-pic {
+        width: 150px;
+        height: 150px;
+        object-fit: cover;
+        border-radius: 50%;
+        margin-bottom: 1rem;
+        border: 3px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .team-member h3 {
+        margin-bottom: 0.2rem;
+        font-size: 1.4rem;
+    }
+
+    .major-text {
+    
+        opacity: 0.9;
+        margin-bottom: 1rem;
+        display: block;
+    }
+
+    .member-bio {
+        display: block;
+        opacity: 0.8; 
+        font-size: 1rem; 
+        line-height: 1.6;
+        margin-bottom: 1.5rem;
+        text-align: center;
+        width: 100%;
+    }
+
+    .member-contribution {
+        display: block;
+        padding-top: 1rem;
+        border-top: 1px solid rgba(255, 255, 255, 0.2); 
+        width: 100%;
+        text-align: center;
+        margin-bottom: 1.5rem; /* Space before the button */
+    }
+
+    .contribution-label {
+        font-weight: bold;
+        color: #a0a0a0; 
+        text-transform: uppercase;
+        font-size: 0.8rem;
+        letter-spacing: 1px;
+        display: block;
+        margin-bottom: 0.5rem;
+    }
+
+    .contribution-text {
+
+        color: #666666;
+        font-size: .9rem;
+    }
 			</style>
 			<div class="inner">
-				<h2>Meet the Team</h2>
-				<p>The engineers behind this Intro to Robotics project.</p>
+    <h2>Meet the Team</h2>
+    <p>The engineers behind this Intro to Robotics project.</p>
 
-				<div class="team-container">
+    <div class="team-container">
 
-					<div class="team-member">
-						<img src="images/Teammates/Sid.jpg" alt="Siddharth Singh" class="profile-pic" />
-						<h3>Siddharth Singh</h3>
-						<span class="major-text">MEng Mechanical Engineering</span>
-						<span class="caption" style="opacity: 70%; font-size:medium; margin-bottom:20pt ">Siddharth is a
-							ME MEng student interested in Robotics design and control. He is
-							well-versed in the product development cycle, and has developed an autonomous RC
-							vehicle in the past. He loves working on cutting-edge electromechanical systems that
-							help solve problems 
-							<br>
-							<strong>Main contribution:</strong> Perception and visualization
-						</span>
-						<ul class="actions small">
-							<li><a href="https://www.linkedin.com/in/siddharthsingh-me/" target="_blank"
-									rel="noopener noreferrer" class="button small icon fa-linkedin">Connect</a></li>
-						</ul>
-					</div>
+        <div class="team-member">
+            <img src="images/Teammates/Sid.jpg" alt="Siddharth Singh" class="profile-pic" />
+            <h3>Siddharth Singh</h3>
+            <span class="major-text">MEng Mechanical Engineering</span>
+            <div class="member-bio">
+                Siddharth is a ME MEng student interested in Robotics design and control. He is well-versed in the product development cycle, and has developed an autonomous RC vehicle in the past. He loves working on cutting-edge electromechanical systems that help solve problems.
+            </div>
+            <div class="member-contribution">
+                <span class="contribution-label">Main Contribution</span>
+                <span class="contribution-text">Perception and visualization</span>
+            </div>
+            <ul class="actions small">
+                <li><a href="https://www.linkedin.com/in/siddharthsingh-me/" target="_blank" rel="noopener noreferrer" class="button small icon fa-linkedin">Connect</a></li>
+            </ul>
+        </div>
 
-					<div class="team-member">
-						<img src="images/Teammates/Rishi.jpg" alt="Rishi Krishnan Anand" class="profile-pic" />
-						<h3>Rishi Krishnan Anand</h3>
-						<span class="major-text">MEng Mechanical Engineering</span>
-						<span class="caption" style="opacity: 70%; font-size:medium; margin-bottom:20pt ">Rishi is a
-							Master’s student in Mechanical Engineering with a background in automotive design. He has
-							also developed a fully working thermochecmical reactor and is
-							interested in addressing thermal design challenges in robotics.
-						<br>
-							<strong>Main contribution:</strong> Planning and driving
-						</span>
+        <div class="team-member">
+            <img src="images/Teammates/Rishi.jpg" alt="Rishi Krishnan Anand" class="profile-pic" />
+            <h3>Rishi Krishnan Anand</h3>
+            <span class="major-text">MEng Mechanical Engineering</span>
+            <div class="member-bio">
+                Rishi is a Master’s student in Mechanical Engineering with a background in automotive design. He has also developed a fully working thermochemical reactor and is interested in addressing thermal design challenges in robotics.
+            </div>
+            <div class="member-contribution">
+                <span class="contribution-label">Main Contribution</span>
+                <span class="contribution-text">Planning and driving</span>
+            </div>
+            <ul class="actions small">
+                <li><a href="https://www.linkedin.com/in/rishi-anand-386a5a224/" target="_blank" rel="noopener noreferrer" class="button small icon fa-linkedin">Connect</a></li>
+            </ul>
+        </div>
 
-						<ul class="actions small">
-							<li><a href="https://www.linkedin.com/in/rishi-anand-386a5a224/" target="_blank"
-									rel="noopener noreferrer" class="button small icon fa-linkedin">Connect</a></li>
-						</ul>
-					</div>
+        <div class="team-member">
+            <img src="images/Teammates/Xander.jpeg" alt="Xander David Steele" class="profile-pic" />
+            <h3>Xander Steele</h3>
+            <span class="major-text">MEng EECS</span>
+            <div class="member-bio">
+                Xander is an EECS MEng student interested in Hardware design. He has extensive experience designing circuits and PCB designs for a broad range of uses. He is passionate about entering the medical device design industry as a hardware designer.
+            </div>
+            <div class="member-contribution">
+                <span class="contribution-label">Main Contribution</span>
+                <span class="contribution-text">Gripping</span>
+            </div>
+            <ul class="actions small">
+                <li><a href="https://www.linkedin.com/in/xander-steele-758181254/" target="_blank" rel="noopener noreferrer" class="button small icon fa-linkedin">Connect</a></li>
+            </ul>
+        </div>
 
-					<div class="team-member">
-						<img src="images/Teammates/Xander.jpeg" alt="Xander David Steele" class="profile-pic" />
-						<h3>Xander Steele</h3>
-						<span class="major-text">MEng EECS</span>
-						<span class="caption" style="opacity: 70%; font-size:medium; margin-bottom:20pt ">Xander is an
-							EECS MEng student interested in Hardware design. He has extensive experience designing circuits and PCB designs for a broad range of uses. He is
-							passionate about entering the medical device design industry as a hardware designer.
-						<br>
-							<strong>Main contribution:</strong> Gripping
-						</span>
-						<ul class="actions small">
-							<li><a href="https://www.linkedin.com/in/xander-steele-758181254/" target="_blank"
-									rel="noopener noreferrer" class="button small icon fa-linkedin">Connect</a></li>
-						</ul>
-					</div>
+        <div class="team-member">
+            <img src="images/1191080-981331-1287x836.jpg" alt="Zev B. Schuman" class="profile-pic" />
+            <h3>Zev B. Schuman</h3>
+            <span class="major-text">MEng Mechanical Engineering</span>
+            <div class="member-bio">
+                Zev is a ME MEng student interested in Robotics design and control. He has experience developing products in a few industries, including space, robotics, and general hardware. He is passionate about the design cycle and creating systems with the potential to make a real impact.
+            </div>
+            <div class="member-contribution">
+                <span class="contribution-label">Main Contribution</span>
+                <span class="contribution-text">Support with content for website</span>
+            </div>
+            <ul class="actions small">
+                <li><a href="https://www.linkedin.com/in/zevschuman/" target="_blank" rel="noopener noreferrer" class="button small icon fa-linkedin">Connect</a></li>
+            </ul>
+        </div>
 
-					<div class="team-member">
-						<img src="images/1191080-981331-1287x836.jpg" alt="Zev B. Schuman" class="profile-pic" />
-						<h3>Zev B. Schuman</h3>
-						<span class="major-text">MEng Mechanical Engineering</span>
-						<span class="caption" style="opacity: 70%; font-size:medium; margin-bottom:20pt ">Zev is a ME
-							MEng student interesting in Robotics design and control. He has experience developing products in a few industries, including space, robotics, and general
-							hardware. He has also developed an autonomous go-kart in the past. He is passionate
-							about the design cycle and creating systems with the potential to make a real impact.
-						<br>
-							<strong>Main contribution:</strong> Support with content for website
-						</span>
-						
-						<ul class="actions small">
-							<li><a href="https://www.linkedin.com/in/zevschuman/" target="_blank"
-									rel="noopener noreferrer" class="button small icon fa-linkedin">Connect</a></li>
-						</ul>
-					</div>
+        <div class="team-member">
+            <img src="images/Teammates/Lennart.JPG" alt="Lennart Peus" class="profile-pic" />
+            <h3>Lennart Peus</h3>
+            <span class="major-text">MEng Mechanical Engineering</span>
+            <div class="member-bio">
+                Lennart did his EECS undergrad at KU Leuven (Belgium), but then started his MEng degree in Mechanical Engineering at UC Berkeley to get more knowledge about robot and control design from a hardware perspective.
+            </div>
+            <div class="member-contribution">
+                <span class="contribution-label">Main Contribution</span>
+                <span class="contribution-text">Communication, website and media</span>
+            </div>
+            <ul class="actions small">
+                <li><a href="https://www.linkedin.com/in/lennart-peus/" target="_blank" rel="noopener noreferrer" class="button small icon fa-linkedin">Connect</a></li>
+            </ul>
+        </div>
 
-					<div class="team-member">
-						<img src="images/Teammates/Lennart.JPG" alt="Lennart Peus" class="profile-pic" />
-						<h3>Lennart Peus</h3>
-						<span class="major-text">MEng Mechanical Engineering</span>
-						<span class="caption"
-							style="opacity: 70%; font-size:medium; margin-bottom:20pt ">Lennart did his EECS undergrad at KULeuven(Belgium),
-							but then started his MEng degree in Mechanical engineering at UC Berkeley to get more knowledge about robot
-							and control design from a hardware perspective.
-						<br>
-							<strong>Main contribution:</strong> Communication, website and media
-						</span>
-						
-						<ul class="actions small">
-							<li><a href="https://www.linkedin.com/in/lennart-peus/" target="_blank"
-									rel="noopener noreferrer" class="button small icon fa-linkedin">Connect</a></li>
-						</ul>
-					</div>
-
-				</div>
-			</div>
+    </div>
+</div>
 		</section>
 		<footer class="wrapper style1 align-center">
 			<div class="inner">

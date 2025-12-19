@@ -77,10 +77,63 @@
                 <img src="images/progress_pics/Robot_bts-9.jpg" alt="Team working very hard" />
             </div>
         </section>
+        <section class="wrapper style1 align-center" id="proposal">
+            <div class="inner">
+                <h2>1. The Original Vision: Autonomous Pet Sitter</h2>
+                <p>
+                    Our initial goal was to expand the Innate Mars robot's portfolio by developing a "Pet Sitter"
+                    application designed to assist owners with feeding needs throughout the day.
+                    The concept involved a complex integration of monitoring and actuation.
+                </p>
+                <div class="items style1 medium onscroll-fade-in">
+                    <section>
+                        <span class="icon style2 major fa-eye"></span>
+                        <h3>Hourly Monitoring</h3>
+                        <p>Using onboard cameras to visually inspect water and food bowls to ensure sufficient hydration
+                            and nutrition.</p>
+                    </section>
+                    <section>
+                        <span class="icon style2 major fa-cutlery"></span>
+                        <h3>Physical Refilling</h3>
+                        <p>Using the 6-DOF robotic arm to physically grab a utensil (scoop), fill it from a dispenser,
+                            and empty it into the pet's bowl.</p>
+                    </section>
+                    <section>
+                        <span class="icon style2 major fa-map-marker"></span>
+                        <h3>Navigation</h3>
+                        <p>Autonomously navigating between food storage, water sources, and feeding areas without human
+                            intervention.</p>
+                    </section>
+                </div>
+            </div>
+        </section>
 
+        <section class="spotlight style1 orient-right content-align-left image-position-center onscroll-image-fade-in"
+            id="pivot">
+            <div class="content">
+                <h2>The Pivot: From Feeder to Fetcher</h2>
+                <p>
+                    While the Pet Sitter concept was ambitious, the reality of working with the hardware revealed
+                    significant constraints.
+                    The complexity of manipulating granular objects (dog food) and liquids with the provided
+                    end-effector, combined with the tight project timeline, required a scope adjustment.
+                </p>
+                <p>
+                    We pivoted from the specific "feeding" task to a generalized <strong>Pick-and-Place (Fetch)</strong>
+                    task.
+                    Instead of managing food scoops, the robot was tasked with locating a specific target
+                    object (a paper ball), picking it up with the arm, and delivering it to a set location.
+                    This allowed us to retain the core technical requirements—<strong>Computer Vision, Navigation, and
+                        Arm Manipulation</strong>—while eliminating the mechanical variables of handling loose food.
+                </p>
+            </div>
+            <div class="image">
+                <img src="images/Gemini_Generated_Image_qvdwloqvdwloqvdw.png" alt="Innate Robot Vision" />
+            </div>
+        </section>
         <section class="wrapper style1 align-center" id="detection">
             <div class="inner">
-                <h2>1. Shortened Timeline</h2>
+                <h2>2. Shortened Timeline</h2>
                 <p>
                     While all the other teams started working on their projects as soon
                     as the project assigments came in, we had to wait for a very
@@ -225,14 +278,15 @@
                     </div>
                 </section>
 
-                <section class="wrapper style1 align-center">
+                <section class="wrapper style1 align-center" style="padding-bottom: 3rem;">
                     <div class="inner">
-                        <h2>2. Further Challenges</h2>
+                        <h2>3. Further Challenges</h2>
                         <p>Next to the above mentioned shortened timeline, we ran into further unexpected issues that
                             took quite some time and resouces to resolve.</p>
+
                         <div class="items style1 medium onscroll-fade-in">
                             <section>
-                                <span class="icon style2 major fa-battery"></span>
+                                <span class="icon style2 major fa-plug"></span>
                                 <h3>1 charger | 1 battery</h3>
                                 <p>We were only supplied with one working charger for all innate groups, which initially
                                     made logistics a bit complicated since we were told to not let the battery die -
@@ -240,7 +294,7 @@
                                     solution</p>
                             </section>
                             <section>
-                                <span class="icon style2 major fa-image"></span>
+                                <span class="icon style2 major fa-wifi"></span>
                                 <h3>Connection issues and outdated software</h3>
                                 <p>As mentioned above, to connect to the robot we needed an external phone app. To get
                                     the connection established we waited hours at a time trying to get the connection to
@@ -249,28 +303,34 @@
                                     to navigate these hurdles</p>
                             </section>
                             <section>
-                                <span class="icon style2 major fa-engine"></span>
+                                <span class="icon style2 major fa-cogs"></span>
                                 <h3>Issues with motors and wheel design</h3>
                                 <p>When moving the robot around, we noticed that it often lost its path eventhough it
                                     was meant to be on a straight trajectory. This swirfing, made us to go for a PD
                                     controller to account for these imperfections.</p>
                             </section>
                             <section>
-                                <span class="icon style2 major fa-link"></span>
+                                <span class="icon style2 major fa-file-code-o"></span>
                                 <h3>No documentation for the topics</h3>
-                                <p>While Mars comes with an extensive list of pre-existent topics, there was no documentation about them yet. So we had to work thought the topics on the robot, to understand how they work and how we can utiize them.</p>
+                                <p>While Mars comes with an extensive list of pre-existent topics, there was no
+                                    documentation about them yet. So we had to work thought the topics on the robot, to
+                                    understand how they work and how we can utiize them.</p>
                             </section>
                             <section>
-                                <span class="icon style2 major fa-compass"></span>
+                                <span class="icon style2 major fa-hand-rock-o"></span>
                                 <h3>Endefactor wasn't strong enough</h3>
-                                <p>As our initial task was to pick up and transport a scoop of dog food, we realised during testing that the Innate arm wouldn't be strong enough to fullfil this task.</p>
+                                <p>As our initial task was to pick up and transport a scoop of dog food, we realised
+                                    during testing that the Innate arm wouldn't be strong enough to fullfil this task.
+                                </p>
                             </section>
                             <section>
-                                <span class="icon style2 major fa-paper-plane"></span>
+                                <span class="icon style2 major fa-rocket"></span>
                                 <h3>Inverse Kinematics</h3>
-                                <p>Since Mars came with a pre-installed IK model, we decided to work with that. Unfortunately, it had some inherintely weird behavior</p>
+                                <p>Since Mars came with a pre-installed IK model, we decided to work with that.
+                                    Unfortunately, it had some inherintely weird behavior</p>
                             </section>
                         </div>
+                    </div>
                 </section>
 
                 <footer class="wrapper style1 align-center">
