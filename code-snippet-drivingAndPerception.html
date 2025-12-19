@@ -1,83 +1,150 @@
-<!DOCTYPE HTML>
+<!DOCTYPE html>
 <html>
-    <head>
-        <title>Code Implementation - MARS Robot driving</title>
-        <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="stylesheet" href="assets/css/main.css" />
-        <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
-        <style>
-    /* Wrapper handles positioning, background, and outer sizing */
-    .code-wrapper {
+  <head>
+    <title>Code Implementation - MARS Robot driving</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="assets/css/main.css" />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      /* Base styles for code wrappers (fallback) */
+      .code-wrapper {
         width: 90%;
         max-width: 800px;
-        margin: 2rem auto;      /* Centered with top/bottom spacing */
+        margin: 1rem auto;
         text-align: left;
-        background-color: #272822; /* Match Prism Tomorrow theme background */
+        background-color: #272822;
         border-radius: 6px;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        overflow-x: auto;       /* Wrapper handles the scrollbar */
-        position: relative;     /* Keeps content contained */
-    }
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        overflow-x: auto;
+        position: relative;
+      }
 
-    /* Force the PRE tag to fill the wrapper perfectly */
-    /* We use !important or specific selectors to override Prism's defaults */
-    .code-wrapper pre[class*="language-"] {
+      /* Override Prism defaults to prevent double padding/margin */
+      .code-wrapper pre[class*="language-"] {
         margin: 0 !important;
         padding: 1.5rem !important;
-        background: transparent !important; /* Use wrapper's background */
+        background: transparent !important;
         border: none !important;
         box-shadow: none !important;
-        overflow: visible !important; /* Let wrapper handle scrolling */
+        overflow: visible !important;
         width: 100%;
         float: none;
-    }
+      }
 
-    /* Standard code font styling */
-    code[class*="language-"],
-    pre[class*="language-"] {
-        font-family: 'Consolas', 'Monaco', 'Courier New', monospace !important;
+      /* Font styling for code */
+      code[class*="language-"],
+      pre[class*="language-"] {
+        font-family: "Consolas", "Monaco", "Courier New", monospace !important;
         font-size: 0.9em !important;
         line-height: 1.6 !important;
         text-shadow: none !important;
-    }
-</style>
-    </head>
-    <body>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
-        <div id="wrapper" class="divided">
+      }
 
-                <section class="banner style1 orient-center content-align-center image-position-center onload-image-fade-in onload-content-fade-right">
-                        <div class="content">
-                            <h1>Driving</h1>
-                            <p class="major">This page describes how the robot autonomously detects the target object, estimates its position in the environment, plans a smooth trajectory, and drives precisely to a predefined stopping point. The full pipeline integrates camera-based perception, coordinate frame transformations, trajectory optimization, and closed-loop steering control. Unlike earlier labs that focused on isolated behaviors, this system unifies perception and motion into a single, repeatable workflow that allows the robot to approach the object reliably from different starting poses.
+      /* Formatting for the explanatory text */
+      .align-center p,
+      .align-center ul,
+      .align-center ol {
+        text-align: left;
+        max-width: 800px;
+        margin-left: auto;
+        margin-right: auto;
+        font-size: 1.1em;
+        line-height: 1.8;
+      }
 
-For this task, LiDAR-based perception was intentionally omitted. Since the environment is planar and the objective is limited to detecting a single object, a 2D vision-based approach provided sufficient accuracy while reducing complexity and computation. All motion planning is performed in a world-fixed frame rather than the robot’s local frame, allowing for more stable and predictable behavior.</p>
-                            <ul class="actions vertical">
-                                <li><a href="index.html#detect" class="button big wide smooth-scroll-middle">Return to Main Page</a></li>
-                            </ul>
-                        </div>
-                        <div class="image">
-                            <img src="images/spotlight01.jpg" alt="" />
-                        </div>
-                    </section>
+      .align-center h2,
+      .align-center h3,
+      .align-center h4 {
+        text-align: center;
+      }
+    </style>
+  </head>
 
-                <section class="wrapper style1 align-center" id="detection">
-                        <div class="inner">
-                            <h2>1. Detection and Image Processing</h2>
-                            
-<p>The perception pipeline begins with processing images from the onboard camera to identify the target object. The raw RGB image is first converted to grayscale, reducing noise and simplifying subsequent filtering steps. A white intensity threshold is then applied to isolate the ball from the background.</p>
+  <body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
 
-<p>Because thresholding alone produces noisy results, we apply a sequence of morphological operations to refine the binary image. Erosion followed by dilation removes small external artifacts and background noise, while dilation followed by erosion fills gaps within the object’s silhouette. This two-stage approach ensures that the detected object forms a clean, continuous region suitable for contour extraction.</p>
+    <div id="wrapper" class="divided">
+      <section
+        class="banner style1 orient-center content-align-center image-position-center onload-image-fade-in onload-content-fade-right"
+      >
+        <div class="content">
+          <h1>Driving</h1>
+          <p class="major">
+            This page describes how the robot autonomously detects the target
+            object, estimates its position, plans a smooth trajectory, and
+            drives precisely to a stopping point. The system unifies perception
+            and motion into a single, repeatable workflow.
+          </p>
+          <p class="major">
+            For this task, LiDAR-based perception was intentionally omitted.
+            Since the environment is planar and the objective is limited to
+            detecting a single object, a 2D vision-based approach provided
+            sufficient accuracy while reducing complexity. All motion planning
+            is performed in a world-fixed frame rather than the robot’s local
+            frame, allowing for more stable and predictable behavior.
+          </p>
+          <ul class="actions vertical">
+            <li>
+              <a
+                href="index.html#detect"
+                class="button big wide smooth-scroll-middle"
+                >Return to Main Page</a
+              >
+            </li>
+          </ul>
+        </div>
+        <div class="image">
+          <img src="images/spotlight01.jpg" alt="" />
+        </div>
+      </section>
 
-<p>Additional plane filtering is used to reject detections that do not lie on the expected ground plane, further improving robustness. After filtering, contour detection is performed, and the largest valid contour is selected as the target object.</p>
-   <div class="code-wrapper" style="width: 100%; max-width: 100%; margin: 2rem auto; text-align: left; background-color: #272822; border-radius: 6px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); overflow-x: auto; position: relative;">
-    
-    <pre style="margin: 0 !important; padding: 1.5rem !important; background: transparent !important; border: none !important; width: 100%;"><code class="language-python"># From detect_object.py
+      <section class="wrapper style1 align-center" id="detection">
+        <div class="inner">
+          <h2>1. Detection and Image Processing</h2>
+          <p>
+            The perception pipeline begins with processing images from the
+            onboard camera. The raw RGB image is converted to grayscale to
+            reduce noise, and a white intensity threshold is applied to isolate
+            the target.
+          </p>
+          <p>
+            We apply morphological operations to refine the binary image.
+            <strong>Erosion followed by dilation</strong> removes noise, while
+            <strong>dilation followed by erosion</strong> fills gaps in the
+            object's silhouette. Finally, plane filtering rejects detections
+            outside the expected ground plane.
+          </p>
+        </div>
+
+        <div
+          style="
+            width: 70%;
+            max-width: 100%;
+            margin: 2rem auto;
+            text-align: left;
+            background-color: #272822;
+            border-radius: 6px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            overflow-x: auto;
+            position: relative;
+          "
+        >
+          <pre
+            style="
+              margin: 0 !important;
+              padding: 1.5rem !important;
+              background: transparent !important;
+              border: none !important;
+              width: 100%;
+            "
+          ><code class="language-python"># From detect_object.py
 
 def detect_white_object(self, image, camera_params, camera_name="unknown"):
-  
     # Convert to grayscale
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     
@@ -86,225 +153,234 @@ def detect_white_object(self, image, camera_params, camera_name="unknown"):
     
     # FILTER: Masking (Base camera ignores upper half of image)
     if camera_name == "BASE":
-        # Only look at lower half for ground objects
         mask = np.zeros_like(binary)
         mask[h_img//2:, :] = 255  # Only bottom half
         binary = cv2.bitwise_and(binary, mask)
     
     # Morphological operations to remove noise
     kernel = np.ones((5, 5), np.uint8)
-    binary = cv2.morphologyEx(binary, cv2.MORPH_OPEN, kernel)  # Erosion -> Dilation
-    binary = cv2.morphologyEx(binary, cv2.MORPH_CLOSE, kernel) # Dilation -> Erosion</code></pre>
-</div>
-<h4>Identifying Object Coordinates</h4>
+    binary = cv2.morphologyEx(binary, cv2.MORPH_OPEN, kernel)
+    binary = cv2.morphologyEx(binary, cv2.MORPH_CLOSE, kernel)</code></pre>
+        </div>
+      </section>
 
-<p>Once the target contour is identified, its centroid is computed using the midpoint of the contour’s maximum width and height in image space. This centroid provides the object’s pixel location in the camera frame.</p>
+      <section class="wrapper style1 align-center" id="coordinates">
+        <div class="inner">
+          <h3>2. Identifying Object Coordinates</h3>
+          <p>
+            The object's centroid is computed using
+            <strong>image moments</strong>, which is more robust than a bounding
+            box center. Depth is estimated using
+            <strong>similar triangles</strong> based on the object's known
+            physical size. We project the 2D pixel coordinates into a 3D
+            position vector (x, y, z) in the camera frame.
+          </p>
+        </div>
 
-<p>Depth is estimated using similar triangles, leveraging the known physical size of the object and its apparent size in the image. This method follows the same principle introduced in earlier labs but is extended here to fully recover the object’s 3D position. The x and y image coordinates are scaled using the estimated depth, resulting in a full (x, y, z) position expressed in the camera frame.</p>
+        <div
+          style="
+            width: 70%;
+            max-width: 100%;
+            margin: 2rem auto;
+            text-align: left;
+            background-color: #272822;
+            border-radius: 6px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            overflow-x: auto;
+            position: relative;
+          "
+        >
+          <pre
+            style="
+              margin: 0 !important;
+              padding: 1.5rem !important;
+              background: transparent !important;
+              border: none !important;
+              width: 100%;
+            "
+          ><code class="language-python"># From detect_object.py: Depth & 3D Projection
 
-<p>This 3D position is published to ROS topics and serves as the interface between perception and motion planning. By separating detection from control, the system remains modular and easier to debug.</p>
+# Calculate Centroid using Moments
+M = cv2.moments(largest_contour)
+cx = int(M['m10'] / M['m00'])
+cy = int(M['m01'] / M['m00'])
 
-<h4>Coordinate Frames and Localization</h4>
+# Distance Estimation (Similar Triangles)
+pixel_size = max(w, h)
+f = (camera_params['fx'] + camera_params['fy']) / 2.0
+distance = (self.object_real_size * f) / pixel_size
 
-<p>To plan motion consistently, all positions are transformed into a common reference frame. We use tf2 to convert poses from the robot’s body frame (base_link) into the world-fixed odometry frame (odom). This is the opposite of earlier implementations that relied heavily on local-frame control.</p>
+# Resulting 3D point (x, y, z) in meters
+point_3d = np.array([x_norm * distance, y_norm * distance, distance])</code></pre>
+        </div>
+      </section>
 
-<p>Maintaining a persistent transform buffer allows efficient and repeated lookups of the robot’s current position and orientation. The robot’s yaw is extracted from its quaternion orientation to simplify planar motion planning. Expressing both the robot and the target in the same frame allows the planner to reason globally about where the robot should move, rather than issuing reactive commands based solely on instantaneous sensor readings.</p>
+      <section class="wrapper style1 align-center" id="localization">
+        <div class="inner">
+          <h3>3. Coordinate Frames & Localization</h3>
+          <p>
+            To plan motion consistently, all positions are transformed into a
+            common reference frame. We use <strong>tf2</strong> to convert poses
+            from the robot’s body frame (<code>base_link</code>) into the
+            world-fixed odometry frame (<code>odom</code>). This allows us to
+            track absolute position and orientation (yaw) for stable path
+            planning.
+          </p>
+        </div>
 
-<h4>Trajectory Design</h4>
+        <div
+          style="
+            width: 70%;
+            max-width: 100%;
+            margin: 2rem auto;
+            text-align: left;
+            background-color: #272822;
+            border-radius: 6px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            overflow-x: auto;
+            position: relative;
+          "
+        >
+          <pre
+            style="
+              margin: 0 !important;
+              padding: 1.5rem !important;
+              background: transparent !important;
+              border: none !important;
+              width: 100%;
+            "
+          ><code class="language-python"># From move_to_object.py: TF2 & Localization
 
-<p>Rather than driving directly toward the target, the robot follows a cubic Bézier curve connecting its current pose to a goal pose near the object. Bézier curves provide smooth curvature and continuous heading changes, resulting in more stable and mechanically gentle motion.</p>
+# Get transform from Odom (world) to Base Link (robot)
+trans = self.tf_buffer.lookup_transform('odom', 'base_link', rclpy.time.Time(), timeout=rclpy.duration.Duration(seconds=0.1))
 
-<p>The trajectory is sampled into a sequence of waypoints, each containing a position and heading. These waypoints define a smooth path that the robot can track using velocity control. This represents a significant improvement over earlier labs, where the robot merely tracked a point at a fixed distance along its current heading without explicit trajectory optimization.</p>
-
-<p>To ensure safe and repeatable behavior, the trajectory is only generated up to a fixed offset from the object. This offset corresponds to the reachable workspace of the robot and prevents overshooting or collision with the target.</p>
-
-<h4>Steering and Velocity Control</h4>
-
-<p>The robot follows the generated waypoints using a closed-loop steering controller running at 20 Hz. At each update, the robot computes its heading error and distance to the next waypoint and adjusts its velocities accordingly.</p>
-
-<p>A low-pass filter is applied to angular velocity commands to prevent sudden changes that could cause oscillations or wheel slip. This smoothing produces more natural motion and improves stability, especially during curved segments of the trajectory.</p>
-
-<p>To reduce noise-induced jitter, a deadband is applied to small angular errors. When the error falls below a defined threshold, corrective commands are suppressed, preventing excessive micro-adjustments when the robot is already well-aligned.</p>
-
-<p>Linear velocity is dynamically adjusted based on both turning demand and proximity to the target. The robot slows down when executing sharp turns and gradually decelerates as it approaches the final waypoint. A minimum velocity threshold ensures continuous motion while avoiding stalls. Together, these mechanisms allow the robot to stop precisely at the desired offset without overshoot.</p>
-                                
-<p>This snippet demonstrates how we initialize the computer vision node to identify the ball using color filtering and contour detection.</p>
-                            
-                            <div class="code-wrapper">
-<pre><code><span class="comment"># Detection Node Snippet (Python / ROS2)</span>
-Trajectory Determination
-    
-TF Conversion: Improves on previous TF buffers with persistent buffer in the node which is more efficient for repeated lookups.
-# TF Buffer defined in init
-self.tf_buffer = tf2_ros.Buffer()
-self.tf_listener = tf2_ros.TransformListener(self.tf_buffer, self)
-
-# Looks up the transform
-trans = self.tf_buffer.lookup_transform(
-    'odom',        # Target frame (world-fixed)
-    'base_link',   # Source frame (robot body)
-    rclpy.time.Time(),  # Latest available transform
-    timeout=rclpy.duration.Duration(seconds=0.1)
-)
-
-# Extracts robot's current position
+# Extract Position and Yaw
 x = trans.transform.translation.x
 y = trans.transform.translation.y
+roll, pitch, yaw = euler.quat2euler([q.w, q.x, q.y, q.z])</code></pre>
+        </div>
+      </section>
 
-def get_current_pose(self):
-    """Get current robot pose from TF."""
-    try:
-        trans = self.tf_buffer.lookup_transform(
-            'odom',
-            'base_link',
-            rclpy.time.Time(),
-            timeout=rclpy.duration.Duration(seconds=0.1)
-        )
-        
-        x = trans.transform.translation.x
-        y = trans.transform.translation.y
-        q = trans.transform.rotation
-        roll, pitch, yaw = euler.quat2euler([q.w, q.x, q.y, q.z])
-        
-        return x, y, yaw
-        
-    except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException) as e:
-        self.get_logger().warn(f'[TF] Could not get current pose: {e}')
-        return None
+      <section class="wrapper style1 align-center" id="trajectory">
+        <div class="inner">
+          <h3>4. Trajectory Design</h3>
+          <p>
+            Rather than driving directly toward the target, the robot follows a
+            <strong>cubic Bézier curve</strong>. This generates smooth curvature
+            and continuous heading changes, resulting in mechanically gentle
+            motion compared to simple point-to-point navigation.
+          </p>
+          <p>
+            The trajectory is sampled into a sequence of waypoints, each
+            containing a position and heading. To ensure safe behavior, the
+            trajectory is generated up to a fixed offset from the object,
+            preventing collision while placing the object in the workspace.
+          </p>
+        </div>
 
-#Conversion from quaternion to yaw
-q = trans.transform.rotation
-roll, pitch, yaw = euler.quat2euler([q.w, q.x, q.y, q.z])
+        <div
+          style="
+            width: 70%;
+            max-width: 100%;
+            margin: 2rem auto;
+            text-align: left;
+            background-color: #272822;
+            border-radius: 6px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            overflow-x: auto;
+            position: relative;
+          "
+        >
+          <pre
+            style="
+              margin: 0 !important;
+              padding: 1.5rem !important;
+              background: transparent !important;
+              border: none !important;
+              width: 100%;
+            "
+          ><code class="language-python"># From move_to_object.py: Bézier Curve Generation
 
-    
-Bezier Curve:
-# Cubic Bezier Curve Formula
 def bezier_curve(self, p0, p1, p2, p3, t):
     """Cubic Bézier interpolation between 4 control points."""
     return (1 - t)**3 * p0 + 3*(1 - t)**2*t*p1 + 3*(1 - t)*t**2*p2 + t**3*p3
 
-# Bezier Curve Waypoint Generation
 def generate_bezier_waypoints(self, x1, y1, theta1, x2, y2, theta2):
-    """Generate (x, y, theta) waypoints along a smooth Bézier path."""
-    
-    # Direction vectors from start and end orientations
+    # Control points offset along current heading direction
     d1 = np.array([np.cos(theta1), np.sin(theta1)])
-    d2 = np.array([-np.cos(theta2), -np.sin(theta2)])
-    
-    # Control points offset along those directions
     c1 = np.array([x1, y1]) + self.bezier_offset * d1
-    c2 = np.array([x2, y2]) + self.bezier_offset * d2
     
     # Sample points along the curve
-    t_vals = np.linspace(0, 1, self.num_waypoints)
-    pts = [self.bezier_curve(np.array([x1, y1]), c1, c2, np.array([x2, y2]), t) for t in t_vals]
-    
-    # Calculate heading (theta) at each point
-    thetas = []
-    for i in range(len(pts) - 1):
-        dx = pts[i+1][0] - pts[i][0]
-        dy = pts[i+1][1] - pts[i][1]
-        thetas.append(np.arctan2(dy, dx))
-    thetas.append(thetas[-1])  # Last point keeps previous heading
-    
-    return [(pts[i][0], pts[i][1], thetas[i]) for i in range(len(pts))]
+    pts = [self.bezier_curve(..., t) for t in t_vals]
+    return pts</code></pre>
+        </div>
+      </section>
 
-PID Controller
-Low Pass Filter: Exponential Moving Average (EMA) filter that prevents sudden spikes or oscillations in angular velocity commands. With alpha set to 0.3 it is a balanced response to sudden motion.
-# Low-pass filter for angular velocity 
-self.filtered_angular_vel = 0.0
-self.angular_filter_alpha = 0.3  # Lower = smoother, higher = more responsive
+      <section class="wrapper style1 align-center" id="control">
+        <div class="inner">
+          <h3>5. Steering and Velocity Control</h3>
+          <p>
+            A closed-loop controller runs at 20Hz. We use a
+            <strong>Low Pass Filter</strong> to smooth angular velocity commands
+            and a <strong>Deadband</strong> to ignore micro-errors when aligned.
+            Linear velocity is dynamically adjusted based on turning sharpness
+            (slowing down for corners) and proximity to the target.
+          </p>
+        </div>
 
-# Raw angular velocity (output from PID)
-raw_angular_vel = p_term + i_term + d_term + self.angular_correction
+        <div
+          style="
+            width: 70%;
+            max-width: 100%;
+            margin: 2rem auto;
+            text-align: left;
+            background-color: #272822;
+            border-radius: 6px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            overflow-x: auto;
+            position: relative;
+          "
+        >
+          <pre
+            style="
+              margin: 0 !important;
+              padding: 1.5rem !important;
+              background: transparent !important;
+              border: none !important;
+              width: 100%;
+            "
+          ><code class="language-python"># From move_to_object.py: Control Logic
 
-# Low-pass filter for smoothness
+# 1. Low-Pass Filter (Exponential Moving Average)
 self.filtered_angular_vel = (self.angular_filter_alpha * raw_angular_vel + 
                               (1 - self.angular_filter_alpha) * self.filtered_angular_vel)
 
-# Clamp angular velocity
-angular_vel = max(-self.max_angular_vel, min(self.max_angular_vel, self.filtered_angular_vel))
-
-
-Noise Reduction: Uses deadband to ignore errors below threshold. This code prevents excessive correcting happening when the robot is close to the target position.
-# Deadband parameter (defined in __init__)
-self.angular_deadband = 0.02  # Ignore small errors (0.02 radians = 1.1 degrees)
-
-# Calculate angle error
-angle_to_waypoint = math.atan2(dy, dx)
-angle_error = self.normalize_angle(angle_to_waypoint - theta)
-
-# Apply deadband to reduce jitter
+# 2. Deadband (Noise Reduction)
 if abs(angle_error) < self.angular_deadband:
-    angle_error = 0.0;
-                        
-Dynamic Speed Adjustment: Slows the robot down for precise stops to prevent overshooting, reduces speed to prevent skidding, and creates smooth gradual velocity changes.
-# Calculate linear velocity
-# Slow down when turning or approaching waypoint
+    angle_error = 0.0
+
+# 3. Dynamic Speed Adjustment
 turn_factor = max(0.4, 1.0 - abs(angle_error) / (math.pi / 2))
-approach_factor = min(1.0, dist / 0.2)  # Slow down within 0.2m of waypoint
+approach_factor = min(1.0, dist / 0.2)
 linear_vel = self.linear_speed * turn_factor * approach_factor
 
-# Minimum linear velocity to keep moving
-linear_vel = max(0.05, linear_vel) 
+# Prevent stalling
+linear_vel = max(0.05, linear_vel)</code></pre>
+        </div>
+      </section>
 
-turn_factor = max(0.4, 1.0 - abs(angle_error) / (math.pi / 2))
+      <footer class="wrapper style1 align-center">
+        <div class="inner">
+          <p>&copy; Intro to Robotics Project.</p>
+        </div>
+      </footer>
+    </div>
 
-approach_factor = min(1.0, dist / 0.2) # Slowing near waypoints 
-
-linear_vel = self.linear_speed * turn_factor * approach_factor # Sets final velocity on approach based on other parameters 
-
-linear_vel = max(0.05, linear_vel) # Prevents robot from stalling
-
-
-
-}</code></pre>
-                            </div>
-                        </div>
-                    </section>
-
-                <section class="wrapper style1 align-center" id="actuation">
-                        <div class="inner">
-                            <h2>3. Actuation (Gripper)</h2>
-                            <p>The final step is the mechanical actuation of the gripper to secure the ball. We use PWM signals to control the servo motors.</p>
-
-                            <div class="code-wrapper">
-<pre><code><span class="comment"># Servo Control Snippet</span>
-<span class="keyword">def</span> <span class="func">activate_gripper</span>(state):
-    <span class="keyword">if</span> state == <span class="string">"OPEN"</span>:
-        pwm.set_duty_cycle(SERVO_PIN, 7.5) <span class="comment"># Neutral position</span>
-        logger.info(<span class="string">"Gripper Opening..."</span>)
-        
-    <span class="keyword">elif</span> state == <span class="string">"CLOSE"</span>:
-        pwm.set_duty_cycle(SERVO_PIN, 12.5) <span class="comment"># 180 degree position</span>
-        logger.info(<span class="string">"Gripper Closing..."</span>)
-        
-    time.sleep(1.0) <span class="comment"># Allow time for mechanical movement</span></code></pre>
-                            </div>
-                        </div>
-                    </section>
-
-                <footer class="wrapper style1 align-center">
-                        <div class="inner">
-                            <!-- 
-                            <ul class="icons">
-                                <li><a href="#" class="icon style2 fa-github"><span class="label">GitHub</span></a></li>
-                                <li><a href="#" class="icon style2 fa-linkedin"><span class="label">LinkedIn</span></a></li>
-                                <li><a href="#" class="icon style2 fa-envelope"><span class="label">Email</span></a></li>
-                            </ul>
-                            -->
-                            <p>&copy; Intro to Robotics Project. Design: <a href="https://html5up.net">HTML5 UP</a>.</p>
-                        </div>
-                    </footer> 
-
-            </div>
-
-        <script src="assets/js/jquery.min.js"></script>
-            <script src="assets/js/jquery.scrollex.min.js"></script>
-            <script src="assets/js/jquery.scrolly.min.js"></script>
-            <script src="assets/js/skel.min.js"></script>
-            <script src="assets/js/util.js"></script>
-            <script src="assets/js/main.js"></script>
-
-    </body>
+    <script src="assets/js/jquery.min.js"></script>
+    <script src="assets/js/jquery.scrollex.min.js"></script>
+    <script src="assets/js/jquery.scrolly.min.js"></script>
+    <script src="assets/js/skel.min.js"></script>
+    <script src="assets/js/util.js"></script>
+    <script src="assets/js/main.js"></script>
+  </body>
 </html>
