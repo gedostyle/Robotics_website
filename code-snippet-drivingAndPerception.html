@@ -7,35 +7,41 @@
         <link rel="stylesheet" href="assets/css/main.css" />
         <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
         <style>
-            /* This ensures the code block is centered but the text inside is left-aligned */
-            .code-wrapper {
-                max-width: 900px;
-                margin: 0 auto 2rem auto;
-                text-align: left;
-                background-color: #272822; /* Monokai-ish dark background */
-                border-radius: 6px;
-                box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-                overflow-x: auto; /* Adds scrollbar if code is too wide */
-            }
+    /* Wrapper handles positioning, background, and outer sizing */
+    .code-wrapper {
+        width: 90%;
+        max-width: 800px;
+        margin: 2rem auto;      /* Centered with top/bottom spacing */
+        text-align: left;
+        background-color: #272822; /* Match Prism Tomorrow theme background */
+        border-radius: 6px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        overflow-x: auto;       /* Wrapper handles the scrollbar */
+        position: relative;     /* Keeps content contained */
+    }
 
-            pre {
-                margin: 0;
-                padding: 1.5rem;
-            }
+    /* Force the PRE tag to fill the wrapper perfectly */
+    /* We use !important or specific selectors to override Prism's defaults */
+    .code-wrapper pre[class*="language-"] {
+        margin: 0 !important;
+        padding: 1.5rem !important;
+        background: transparent !important; /* Use wrapper's background */
+        border: none !important;
+        box-shadow: none !important;
+        overflow: visible !important; /* Let wrapper handle scrolling */
+        width: 100%;
+        float: none;
+    }
 
-            code {
-                font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
-                font-size: 0.9em;
-                color: #f8f8f2; /* Light text code color */
-                line-height: 1.6;
-            }
-
-            /* Optional: Syntax highlighting simulation colors */
-            .keyword { color: #f92672; font-weight: bold; }
-            .func { color: #66d9ef; }
-            .string { color: #e6db74; }
-            .comment { color: #75715e; font-style: italic; }
-        </style>
+    /* Standard code font styling */
+    code[class*="language-"],
+    pre[class*="language-"] {
+        font-family: 'Consolas', 'Monaco', 'Courier New', monospace !important;
+        font-size: 0.9em !important;
+        line-height: 1.6 !important;
+        text-shadow: none !important;
+    }
+</style>
     </head>
     <body>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
@@ -60,38 +66,36 @@ For this task, LiDAR-based perception was intentionally omitted. Since the envir
                 <section class="wrapper style1 align-center" id="detection">
                         <div class="inner">
                             <h2>1. Detection and Image Processing</h2>
-                            {# <h4>Detection and Image Processing</h4> #}
-
+                            
 <p>The perception pipeline begins with processing images from the onboard camera to identify the target object. The raw RGB image is first converted to grayscale, reducing noise and simplifying subsequent filtering steps. A white intensity threshold is then applied to isolate the ball from the background.</p>
 
 <p>Because thresholding alone produces noisy results, we apply a sequence of morphological operations to refine the binary image. Erosion followed by dilation removes small external artifacts and background noise, while dilation followed by erosion fills gaps within the object’s silhouette. This two-stage approach ensures that the detected object forms a clean, continuous region suitable for contour extraction.</p>
 
 <p>Additional plane filtering is used to reject detections that do not lie on the expected ground plane, further improving robustness. After filtering, contour detection is performed, and the largest valid contour is selected as the target object.</p>
-    <div class="code-wrapper">
-    <pre><code lass="language-python"># From detect_object.py
+   <div class="code-wrapper" style="width: 100%; max-width: 100%; margin: 2rem auto; text-align: left; background-color: #272822; border-radius: 6px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); overflow-x: auto; position: relative;">
+    
+    <pre style="margin: 0 !important; padding: 1.5rem !important; background: transparent !important; border: none !important; width: 100%;"><code class="language-python"># From detect_object.py
 
-    def detect_white_object(self, image, camera_params, camera_name="unknown"):
-        """
-        Detect white objects in image using thresholding and morphological operations.
-        """
-        # Convert to grayscale
-        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-        
-        # Threshold to find white objects
-        _, binary = cv2.threshold(gray, self.white_threshold, 255, cv2.THRESH_BINARY)
-        
-        # FILTER: Masking (Base camera ignores upper half of image)
-        if camera_name == "BASE":
-            # Only look at lower half for ground objects
-            mask = np.zeros_like(binary)
-            mask[h_img//2:, :] = 255  # Only bottom half
-            binary = cv2.bitwise_and(binary, mask)
-        
-        # Morphological operations to remove noise
-        kernel = np.ones((5, 5), np.uint8)
-        binary = cv2.morphologyEx(binary, cv2.MORPH_OPEN, kernel)  # Erosion -> Dilation
-        binary = cv2.morphologyEx(binary, cv2.MORPH_CLOSE, kernel) # Dilation -> Erosion</code></pre>
-    </div>
+def detect_white_object(self, image, camera_params, camera_name="unknown"):
+  
+    # Convert to grayscale
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    
+    # Threshold to find white objects
+    _, binary = cv2.threshold(gray, self.white_threshold, 255, cv2.THRESH_BINARY)
+    
+    # FILTER: Masking (Base camera ignores upper half of image)
+    if camera_name == "BASE":
+        # Only look at lower half for ground objects
+        mask = np.zeros_like(binary)
+        mask[h_img//2:, :] = 255  # Only bottom half
+        binary = cv2.bitwise_and(binary, mask)
+    
+    # Morphological operations to remove noise
+    kernel = np.ones((5, 5), np.uint8)
+    binary = cv2.morphologyEx(binary, cv2.MORPH_OPEN, kernel)  # Erosion -> Dilation
+    binary = cv2.morphologyEx(binary, cv2.MORPH_CLOSE, kernel) # Dilation -> Erosion</code></pre>
+</div>
 <h4>Identifying Object Coordinates</h4>
 
 <p>Once the target contour is identified, its centroid is computed using the midpoint of the contour’s maximum width and height in image space. This centroid provides the object’s pixel location in the camera frame.</p>
