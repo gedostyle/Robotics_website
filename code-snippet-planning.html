@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Code Implementation - MARS Robot Planning</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="assets/css/main.css" />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css"
+      rel="stylesheet"
+    />
+
+    <style>
+      /* --- Layout & Typography --- */
+      .align-center p,
+      .align-center ul,
+      .align-center ol {
+        text-align: left;
+        max-width: 800px;
+        margin-left: auto;
+        margin-right: auto;
+        font-size: 1.1em;
+        line-height: 1.8;
+        margin-bottom: 2rem;
+      }
+
+      .align-center h2,
+      .align-center h3,
+      .align-center h4 {
+        text-align: center;
+        margin-bottom: 1.5rem;
+      }
+
+      /* --- Code Block Styling --- */
+      .code-wrapper {
+        width: 90%;
+        max-width: 1000px;
+        margin: 2rem auto;
+        background-color: #272822;
+        border-radius: 8px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        text-align: left;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .code-wrapper pre[class*="language-"] {
+        margin: 0 !important;
+        padding: 1.5rem !important;
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        width: 100%;
+        overflow-x: auto;
+      }
+
+      code[class*="language-"],
+      pre[class*="language-"] {
+        font-family: "Consolas", "Monaco", "Courier New", monospace !important;
+        font-size: 0.95em !important;
+        line-height: 1.6 !important;
+        text-shadow: none !important;
+      }
+    </style>
+  </head>
+
+  <body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+
+    <div id="wrapper" class="divided">
+      <section
+        class="banner style1 orient-center content-align-center image-position-center onload-image-fade-in onload-content-fade-right"
+      >
+        <div class="content">
+          <h1>Motion & Task Planning</h1>
+          <p class="major">
+            Autonomous behavior requires robust planning across multiple
+            domains. We implemented <strong>Bézier Curves</strong> for smooth
+            navigation, a <strong>Multi-Stage Trajectory</strong> for the arm to
+            ensure collision-free grasping, and a rigid
+            <strong>TF2 Coordinate Architecture</strong> to maintain spatial
+            awareness across all robot links.
+          </p>
+          <ul class="actions vertical">
+            <li>
+              <a
+                href="index.html#grip"
+                class="button big wide smooth-scroll-middle"
+                >Return to Main Page</a
+              >
+            </li>
+          </ul>
+        </div>
+        <div class="image">
+          <img src="images/tf2_graph.png" alt="TF2 Coordinate Frame Tree" />
+        </div>
+      </section>
+
+      <section class="wrapper style1 align-center" id="forward">
+        <div class="inner">
+          <h2>1. Navigation Planning: Bézier Curves</h2>
+          <p>
+            Standard point-to-point navigation results in jerky, robotic motion.
+            To solve this, we implemented a
+            <strong>Cubic Bézier Generator</strong>. This algorithm calculates a
+            smooth curved path connecting the robot's current heading to the
+            target vector, allowing for continuous momentum and mechanically
+            gentle turns.
+          </p>
+          <p>
+            The control points are dynamically offset based on the robot's
+            current speed and orientation, ensuring the path is mathematically
+            continuous (C1 continuity).
+          </p>
+        </div>
+
+        <div class="code-wrapper">
+          <pre><code class="language-python"># From move_to_object.py
+
+def generate_bezier_waypoints(self, x1, y1, theta1, x2, y2, theta2):
+    """
+    Generate (x, y, theta) waypoints along a smooth Bézier path.
+    Uses control points d1/d2 to ensure heading continuity.
+    """
+    d1 = np.array([np.cos(theta1), np.sin(theta1)])
+    d2 = np.array([-np.cos(theta2), -np.sin(theta2)])
+    
+    # Offset control points to shape the curve
+    c1 = np.array([x1, y1]) + self.bezier_offset * d1
+    c2 = np.array([x2, y2]) + self.bezier_offset * d2
+    
+    # Sample points along the curve
+    t_vals = np.linspace(0, 1, self.num_waypoints)
+    pts = [self.bezier_curve(np.array([x1, y1]), c1, c2, np.array([x2, y2]), t) for t in t_vals]
+    
+    return pts</code></pre>
+        </div>
+      </section>
+
+      <section class="wrapper style1 align-center" id="arm-trajectory">
+        <div class="inner">
+          <h2>2. Arm Trajectory Strategy</h2>
+          [
+          <p>
+            The arm does not simply move from point A to point B. To prevent
+            collisions and ensure a vertical grasp, we designed a
+            <strong>4-Stage Discrete Trajectory</strong>. Each stage serves a
+            specific safety or perception purpose:
+          </p>
+          <ul>
+            <li>
+              <strong>Stage 1: Overhead Position.</strong> Moves the camera to
+              its highest vantage point to maximize the field of view for
+              detection.
+            </li>
+
+            <li>
+              <strong>Stage 2: Midpoint Re-evaluation.</strong> The arm pauses
+              to re-calculate the object's position, correcting for any odometry
+              drift that occurred during the approach.
+            </li>
+
+            <li>
+              <strong>Stage 3: Grasping Position.</strong> The end-effector
+              descends vertically with a calculated Z-axis offset to align the
+              gripper jaws.
+            </li>
+
+            <li>
+              <strong>Stage 4: Home Position.</strong> Securely retracts the
+              object to the center of mass for stability during the return trip.
+            </li>
+          </ul>
+        </div>
+
+        <div class="code-wrapper">
+          <pre><code class="language-python"># From arm_movement.py: State Definition
+
+class GraspState(Enum):
+    IDLE = 0
+    MOVE_TO_OVERHEAD = 2       # Stage 1: Maximize visibility
+    POSITION_ABOVE_OBJECT = 6  # Stage 2: Align with target
+    LOWER_TO_OBJECT = 8        # Stage 3: Vertical descent
+    RETURN_TO_REST = 11        # Stage 4: Safe transport mode
+
+def plan_arm_path(self, state):
+    """Calculates IK targets based on current state"""
+    if state == GraspState.MOVE_TO_OVERHEAD:
+        return self.ik_solver.get_joint_angles(x=0.2, y=0.0, z=0.4) # High pose
+    elif state == GraspState.LOWER_TO_OBJECT:
+        # Use transformed vision coordinates
+        target = self.calculate_object_position_in_base()
+        return self.ik_solver.get_joint_angles(target.x, target.y, target.z + GRASP_OFFSET)</code></pre>
+        </div>
+      </section>
+
+      <section class="wrapper style1 align-center" id="architecture">
+        <div class="inner">
+          <h2>3. Coordinate Frame Architecture (TF2)</h2>
+          <p>
+            A major challenge was unifying the disparate coordinate systems. The
+            vision system sees in the <code>camera_optical_frame</code>, the
+            navigation system plans in <code>odom</code>, and the arm solves
+            kinematics in <code>base_link</code>.
+          </p>
+          <p>
+            We implemented a rigid <strong>TF2 Tree</strong> to handle these
+            transforms dynamically. This allows us to detect an object in the
+            camera frame and instantaneously query its position relative to the
+            base, regardless of the arm's current angle or the robot's position
+            in the room.
+          </p>
+        </div>
+
+        <div class="code-wrapper">
+          <pre><code class="language-python"># From detect_object.py: The TF Lookup Logic
+
+def transform_camera_to_base(self, detection_point):
+    """
+    Transforms a point from the dynamic Camera Frame to the fixed Base Frame.
+    This accounts for the arm's current rotation and extension.
+    """
+    try:
+        # Lookup the transform at the exact time of detection
+        transform = self.tf_buffer.lookup_transform(
+            'base_link',          # Target Frame
+            'camera_link',        # Source Frame
+            rclpy.time.Time()
+        )
+        
+        # Apply rotation and translation math
+        p_base = do_transform_point(detection_point, transform)
+        return p_base
+        
+    except TransformException as ex:
+        self.get_logger().warn(f'Could not transform point: {ex}')
+        return None</code></pre>
+        </div>
+      </section>
+
+      <section class="wrapper style1 align-center" id="backward">
+        <div class="inner">
+          <h2>4. Return Planning: Odometry Integration</h2>
+          <p>
+            To return home, the robot calculates the Euclidean distance traveled
+            from its starting pose. This is more robust than time-based
+            open-loop control, as it adapts to battery voltage fluctuations and
+            wheel slip.
+          </p>
+        </div>
+
+        <div class="code-wrapper">
+          <pre><code class="language-python"># From return_to_base.py
+
+# Calculate Euclidean distance traveled from start
+dx = x - self.start_x
+dy = y - self.start_y
+distance_traveled = math.sqrt(dx**2 + dy**2)
+
+# Check if we've traveled far enough
+if distance_traveled >= self.return_distance:
+    self.stop_robot()</code></pre>
+        </div>
+      </section>
+
+      <footer class="wrapper style1 align-center">
+        <div class="inner">
+          <p>
+            &copy; Intro to Robotics Project. Design:
+            <a href="https://html5up.net">HTML5 UP</a>.
+          </p>
+        </div>
+      </footer>
+    </div>
+
+    <script src="assets/js/jquery.min.js"></script>
+    <script src="assets/js/jquery.scrollex.min.js"></script>
+    <script src="assets/js/jquery.scrolly.min.js"></script>
+    <script src="assets/js/skel.min.js"></script>
+    <script src="assets/js/util.js"></script>
+    <script src="assets/js/main.js"></script>
+  </body>
+</html>

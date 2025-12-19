@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Code Implementation - MARS Robot</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="assets/css/main.css" />
+
+    <style>
+        /* This ensures the code block is centered but the text inside is left-aligned */
+        .code-wrapper {
+            max-width: 900px;
+            margin: 0 auto 2rem auto;
+            text-align: left;
+            background-color: #272822;
+            /* Monokai-ish dark background */
+            border-radius: 6px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            overflow-x: auto;
+            /* Adds scrollbar if code is too wide */
+        }
+
+        pre {
+            margin: 0;
+            padding: 1.5rem;
+        }
+
+        code {
+            font-family: "Consolas", "Monaco", "Courier New", monospace;
+            font-size: 0.9em;
+            color: #f8f8f2;
+            /* Light text code color */
+            line-height: 1.6;
+        }
+
+        /* Optional: Syntax highlighting simulation colors */
+        .keyword {
+            color: #f92672;
+            font-weight: bold;
+        }
+
+        .func {
+            color: #66d9ef;
+        }
+
+        .string {
+            color: #e6db74;
+        }
+
+        .comment {
+            color: #75715e;
+            font-style: italic;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="wrapper" class="divided">
+        <section
+            class="banner style1 orient-center content-align-center image-position-center onload-image-fade-in onload-content-fade-right">
+            <div class="content">
+                <h1>Challanges</h1>
+                <p class="major">
+                    As this was the <strong>first time</strong> the course offered
+                    industry projects and used the technologies from external companies,
+                    there were some unexpected challenges that we encountered during our
+                    project
+                </p>
+                <ul class="actions vertical">
+                    <li>
+                        <a href="index.html#detect" class="button big wide smooth-scroll-middle">Return to Main Page</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="image">
+                <img src="images/progress_pics/Robot_bts-9.jpg" alt="Team working very hard" />
+            </div>
+        </section>
+
+        <section class="wrapper style1 align-center" id="detection">
+            <div class="inner">
+                <h2>1. Shortened Timeline</h2>
+                <p>
+                    While all the other teams started working on their projects as soon
+                    as the project assigments came in, we had to wait for a very
+                    critical part. The robot wasn't there. And noone knew when and how
+                    it would arrive. This made our final timeline for delivery very
+                    tight when we finally received teh robot the day before thanksgiving
+                    break. Below you cans ee our project timeline:
+                </p>
+
+                <section class="wrapper style1 align-center timeline-section" id="timeline">
+                    <div class="inner">
+                        <h2>Project Timeline</h2>
+                        <p>From initial concept to final demo: a journey of debugging and iteration.</p>
+
+                        <div class="timeline">
+
+                            <div class="timeline-container left">
+                                <div class="content-box">
+                                    <h3>Week 1: Submission of project proposal</h3>
+                                    10/22<p>We started with an ambitious goal: An autonomous pet feeder that detects
+                                        food, scoops it, and delivers it to a bowl.</p>
+                                </div>
+                            </div>
+
+                            <div class="timeline-container right">
+                                <div class="content-box">
+                                    <h3>Week 2: Assignemnt to Innate project</h3>
+                                    10/29<p>We got official confirmation that we will receive the Mars robot as our
+                                        project.</p>
+                                </div>
+                            </div>
+
+                            <div class="timeline-container left">
+                                <div class="content-box">
+                                    <h3>Week 3: Initial contact with Innate</h3>
+                                    [Put EXACT DATE OF MEETING HERE]<p>We were ijntrodced to <strong>Acel
+                                            Peytavin</strong> as our point of contact. As cofounder and CEO of Innate he
+                                        was able to give us great insight into their vision with mars and about what
+                                        they were hoping to learn from us as hardware tester</p>
+                                </div>
+                            </div>
+
+                            <div class="timeline-container right">
+                                <div class="content-box">
+                                    <h3>Week 4: No news about arrival</h3>
+                                    <p>The course instructor said they received a robot but it would have to be shared
+                                        with all the other remaining industry groups and needs to be rented. As this
+                                        seemed to be a very complicated process, we continued focussing on finishing
+                                        other course work to free up time down the line</p>
+                                </div>
+                            </div>
+
+                            <div class="timeline-container left">
+                                <div class="content-box">
+                                    <h3>Week 5: "Robot will arrive later this week"</h3>
+                                    <p></p>
+                                </div>
+                            </div>
+
+                            <div class="timeline-container right">
+                                <div class="content-box">
+                                    <h3>Check-In 1</h3>
+                                    <p> Still no robot, so we Unfortunately could not share much progress</p>
+                                </div>
+                            </div>
+
+                            <div class="timeline-container left">
+                                <div class="content-box">
+                                    <h3>Week 6: Receival of hardware</h3>
+                                    <p>The Friday before the Thanksgiving week we finally received the hardware from the
+                                        course instructors. Unfortunately, the team spread all across the country to be
+                                        with friends and family for the hoidays. </p>
+                                </div>
+                            </div>
+
+                            <div class="timeline-container right">
+                                <div class="content-box">
+                                    <h3>Week 7 Day 1: Setting up connection to te robot</h3>
+                                    <p> Something that hasn't been communicated with us was that in order to connect the
+                                        robot to wifi and hence get its IP, we needed to connect it to an App. This
+                                        required us to request TestFlight access, but after some trouble shooting we
+                                        were finally setup connection with the robot </p>
+                                </div>
+                            </div>
+
+                            <div class="timeline-container left">
+                                <div class="content-box">
+                                    <h3>Week 7 Day 2: Teleop and path tracking</h3>
+                                    <p> Mars is based on a slightly different platform compared to waht we were used to
+                                        in the lab. I.e. the topic list was very different and we had to get used to
+                                        interacting with them. So our first challenge was to run something natively on
+                                        the robot and eventually make it follow a predetermined path. Here we already
+                                        noticed the inconsistencies in Motor torque. </p>
+                                </div>
+                            </div>
+
+                            <div class="timeline-container right">
+                                <div class="content-box">
+                                    <h3>Week 7 Day 3: Vision | Change in objective and killing of the Lidar </h3>
+                                    <p> From discussions on the discord from the other teams with the CEO, we learned
+                                        that the robots camera does not have a depth perception model or visualization
+                                        tools. So that was our next task. Working on this made us realise that the 2D
+                                        LiDAR would not add much benefit to our revised goal (due to time constraints)
+                                        and we sticked to the vision only approach</p>
+                                </div>
+                            </div>
+
+                            <div class="timeline-container left">
+                                <div class="content-box">
+                                    <h3>Week 7 Day 3: Vision + detection + driving</h3>
+                                    <p> After having a solid detection and visualization code, we now connected that to
+                                        the planning and driving approach</p>
+                                </div>
+                            </div>
+
+                            <div class="timeline-container right">
+                                <div class="content-box">
+                                    <h3>Week 7 Day 4: Gripper control</h3>
+                                    <p> Now that we were able to move forward and backward to the initial position, we
+                                        added gripper control to pick the object. Challenge here was that we needed to
+                                        account for the arms camera, which we used to track the object for pickup</p>
+                                </div>
+                            </div>
+
+                            <div class="timeline-container left">
+                                <div class="content-box">
+                                    <h3>Week 7 Day 5: Assembling it all</h3>
+                                    <p> Now we had to put it all together, test and optimize the final result</p>
+                                </div>
+                            </div>
+
+                            <div class="timeline-container right">
+                                <div class="content-box">
+                                    <h3>Week 7 Day 6: Finalization</h3>
+                                    <p> It's done. Everything came together and worked</p>
+                                </div>
+                            </div>
+
+
+
+                        </div>
+                    </div>
+                </section>
+
+                <section class="wrapper style1 align-center">
+                    <div class="inner">
+                        <h2>2. Further Challenges</h2>
+                        <p>Next to the above mentioned shortened timeline, we ran into further unexpected issues that
+                            took quite some time and resouces to resolve.</p>
+                        <div class="items style1 medium onscroll-fade-in">
+                            <section>
+                                <span class="icon style2 major fa-battery"></span>
+                                <h3>1 charger | 1 battery</h3>
+                                <p>We were only supplied with one working charger for all innate groups, which initially
+                                    made logistics a bit complicated since we were told to not let the battery die -
+                                    ever. After some communication with the others, we found a mutually satisfying
+                                    solution</p>
+                            </section>
+                            <section>
+                                <span class="icon style2 major fa-image"></span>
+                                <h3>Connection issues and outdated software</h3>
+                                <p>As mentioned above, to connect to the robot we needed an external phone app. To get
+                                    the connection established we waited hours at a time trying to get the connection to
+                                    go through. We also had to update the OS running on the robot since we still had an
+                                    older version delivered to us. With constant communication with the CEO we were able
+                                    to navigate these hurdles</p>
+                            </section>
+                            <section>
+                                <span class="icon style2 major fa-engine"></span>
+                                <h3>Issues with motors and wheel design</h3>
+                                <p>When moving the robot around, we noticed that it often lost its path eventhough it
+                                    was meant to be on a straight trajectory. This swirfing, made us to go for a PD
+                                    controller to account for these imperfections.</p>
+                            </section>
+                            <section>
+                                <span class="icon style2 major fa-link"></span>
+                                <h3>No documentation for the topics</h3>
+                                <p>While Mars comes with an extensive list of pre-existent topics, there was no documentation about them yet. So we had to work thought the topics on the robot, to understand how they work and how we can utiize them.</p>
+                            </section>
+                            <section>
+                                <span class="icon style2 major fa-compass"></span>
+                                <h3>Endefactor wasn't strong enough</h3>
+                                <p>As our initial task was to pick up and transport a scoop of dog food, we realised during testing that the Innate arm wouldn't be strong enough to fullfil this task.</p>
+                            </section>
+                            <section>
+                                <span class="icon style2 major fa-paper-plane"></span>
+                                <h3>Inverse Kinematics</h3>
+                                <p>Since Mars came with a pre-installed IK model, we decided to work with that. Unfortunately, it had some inherintely weird behavior</p>
+                            </section>
+                        </div>
+                </section>
+
+                <footer class="wrapper style1 align-center">
+                    <div class="inner">
+                        <!-- 
+                            <ul class="icons">
+                                <li><a href="#" class="icon style2 fa-github"><span class="label">GitHub</span></a></li>
+                                <li><a href="#" class="icon style2 fa-linkedin"><span class="label">LinkedIn</span></a></li>
+                                <li><a href="#" class="icon style2 fa-envelope"><span class="label">Email</span></a></li>
+                            </ul>
+                            -->
+                        <p>
+                            &copy; Intro to Robotics Project. Design:
+                            <a href="https://html5up.net">HTML5 UP</a>.
+                        </p>
+                    </div>
+                </footer>
+            </div>
+
+            <script src="assets/js/jquery.min.js"></script>
+            <script src="assets/js/jquery.scrollex.min.js"></script>
+            <script src="assets/js/jquery.scrolly.min.js"></script>
+            <script src="assets/js/skel.min.js"></script>
+            <script src="assets/js/util.js"></script>
+            <script src="assets/js/main.js"></script>
+</body>
+
+</html>
+
+Here is a good spot for the learnings grid. Step by step lay out the problems.
+Also including the timelijne on which we have received that stupid ass robot

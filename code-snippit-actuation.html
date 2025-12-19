@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Code Implementation - MARS Robot Actuation</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="assets/css/main.css" />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css"
+      rel="stylesheet"
+    />
+
+    <style>
+      /* --- Layout & Typography (Consistent with other pages) --- */
+      .align-center p,
+      .align-center ul,
+      .align-center ol {
+        text-align: left;
+        max-width: 800px;
+        margin-left: auto;
+        margin-right: auto;
+        font-size: 1.1em;
+        line-height: 1.8;
+        margin-bottom: 2rem;
+      }
+
+      .align-center h2,
+      .align-center h3,
+      .align-center h4 {
+        text-align: center;
+        margin-bottom: 1.5rem;
+      }
+
+      /* --- Code Block Styling --- */
+      .code-wrapper {
+        width: 90%;
+        max-width: 1000px;
+        margin: 2rem auto;
+        background-color: #272822;
+        border-radius: 8px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        text-align: left;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .code-wrapper pre[class*="language-"] {
+        margin: 0 !important;
+        padding: 1.5rem !important;
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        width: 100%;
+        overflow-x: auto;
+      }
+
+      code[class*="language-"],
+      pre[class*="language-"] {
+        font-family: "Consolas", "Monaco", "Courier New", monospace !important;
+        font-size: 0.95em !important;
+        line-height: 1.6 !important;
+        text-shadow: none !important;
+      }
+    </style>
+  </head>
+
+  <body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+
+    <div id="wrapper" class="divided">
+      <section
+        class="banner style1 orient-center content-align-center image-position-center onload-image-fade-in onload-content-fade-right"
+      >
+        <div class="content">
+          <h1>Actuation & Manipulation</h1>
+          <p class="major">
+            While driving operates in a 2D plane, manipulation requires precise
+            control in 3D space. This page details the state machine designed
+            for reliable pick-and-place operations, the Inverse Kinematics (IK)
+            used to position the arm, and the PWM control of the gripper.
+          </p>
+          <ul class="actions vertical">
+            <li>
+              <a
+                href="index.html#grip"
+                class="button big wide smooth-scroll-middle"
+                >Return to Main Page</a
+              >
+            </li>
+          </ul>
+        </div>
+        <div class="image">
+          <img
+            src="images/arm_banner_placeholder.jpg"
+            alt="MARS Robot Arm in action"
+          />
+        </div>
+      </section>
+
+      <section class="wrapper style1 align-center" id="statemachine">
+        <div class="inner">
+          <h2>1. The Manipulation State Machine</h2>
+          <p>
+            To ensure reliability and safety, the arm does not move directly
+            from its resting position to the object. Instead, it follows a
+            strict <strong>multi-stage trajectory</strong> governed by a state
+            machine. This approach prevents collisions, allows for re-evaluation
+            of the target position, and ensures the gripper approaches the
+            object vertically.
+          </p>
+
+          <div class="box alt">
+            <div class="row gtr-50 uniform">
+              <div class="col-12">
+                <span class="image fit"
+                  ><img
+                    src="images/state_machine_diagram_placeholder.jpg"
+                    alt="State Machine Flowchart"
+                /></span>
+              </div>
+            </div>
+          </div>
+
+          <p>The sequence is designed as follows:</p>
+          <ul>
+            <li>
+              <strong>Move to Overhead:</strong> Lifts the arm high to get a
+              clear, unobstructed view from the arm camera.
+            </li>
+            <li>
+              <strong>Position Above Object:</strong> Uses updated vision data
+              to move directly over the target.
+            </li>
+            <li>
+              <strong>Lower to Object:</strong> Slowly descends along the Z-axis
+              to engage the object.
+            </li>
+            <li>
+              <strong>Close Gripper & Return to Rest:</strong> Secures the
+              object and moves to a safe carrying pose.
+            </li>
+          </ul>
+        </div>
+
+        <div class="code-wrapper">
+          <pre><code class="language-python"># From arm_movement.py
+
+class GraspState(Enum):
+    IDLE = 0
+    OPEN_GRIPPER = 1
+    MOVE_TO_OVERHEAD = 2
+    WAIT_FOR_OVERHEAD_MOTION = 3
+    SETTLE_AT_OVERHEAD = 4
+    WAIT_FOR_ARM_CAMERA_DETECTION = 5
+    POSITION_ABOVE_OBJECT = 6
+    WAIT_FOR_ABOVE_MOTION = 7
+    LOWER_TO_OBJECT = 8
+    WAIT_FOR_LOWER_MOTION = 9
+    CLOSE_GRIPPER = 10
+    RETURN_TO_REST = 11</code></pre>
+        </div>
+      </section>
+
+      <section class="wrapper style1 align-center" id="ik">
+        <div class="inner">
+          <h3>2. Inverse Kinematics & Coordinate Transforms</h3>
+          <p>
+            The vision system provides the object's location relative to the
+            camera. To grab it, we must know its location relative to the arm's
+            base.
+          </p>
+          <p>
+            We perform a <strong>coordinate transformation</strong>, taking the
+            object's position in the camera frame (detected in the previous
+            step) and adjusting it based on the arm's current end-effector
+            position. This calculated 3D point is then passed to the robot's
+            <strong>Inverse Kinematics (IK) solver</strong>, which determines
+            the exact joint angles required to reach that point.
+          </p>
+        </div>
+
+        <div class="code-wrapper">
+          <pre><code class="language-python"># From arm_movement.py
+
+def calculate_object_position_in_base(self):
+    # Transform object from Arm Camera frame to Base Link frame
+    cam_x = self.arm_camera_detection.point.x
+    cam_y = self.arm_camera_detection.point.y
+    cam_z = self.arm_camera_detection.point.z
+    
+    # Current arm end-effector position
+    ee_x = self.current_pose.pose.position.x
+    ee_y = self.current_pose.pose.position.y
+    ee_z = self.current_pose.pose.position.z
+    
+    # Calculate global position (Camera is pointing down)
+    # cam_z gives vertical offset, cam_x/y give horizontal offset relative to EE
+    obj_x = ee_x + cam_x  
+    obj_y = ee_y - cam_y 
+    obj_z = ee_z - cam_z  
+    
+    return (obj_x, obj_y, obj_z)</code></pre>
+        </div>
+      </section>
+
+      <section class="wrapper style1 align-center" id="gripper">
+        <div class="inner">
+          <h3>3. Gripper Actuation</h3>
+          <p>
+            Once the arm is in position, the final step is physical interaction.
+            The gripper is controlled via
+            <strong>PWM (Pulse Width Modulation)</strong> signals sent to servo
+            motors. We defined specific duty cycles corresponding to the "fully
+            open" and "closed" positions required to grasp the paper ball
+            securely.
+          </p>
+
+          <div class="box alt">
+            <span class="image fit" style="max-width: 600px; margin: 0 auto">
+              <img
+                src="images/gripper_action_placeholder.gif"
+                alt="Gripper opening and closing GIF"
+              />
+            </span>
+          </div>
+        </div>
+
+        <div class="code-wrapper">
+          <pre><code class="language-python"># From arm_movement.py
+
+def activate_gripper(state):
+    if state == "OPEN":
+        # Neutral/Open position duty cycle
+        pwm.set_duty_cycle(SERVO_PIN, 7.5) 
+        logger.info("Gripper Opening...")
+        
+    elif state == "CLOSE":
+        # Closed position duty cycle
+        pwm.set_duty_cycle(SERVO_PIN, 12.5) 
+        logger.info("Gripper Closing...")
+        
+    # Allow time for mechanical movement to complete before proceeding
+    time.sleep(1.0)</code></pre>
+        </div>
+      </section>
+
+      <footer class="wrapper style1 align-center">
+        <div class="inner">
+          <p>
+            &copy; Intro to Robotics Project. Design:
+            <a href="https://html5up.net">HTML5 UP</a>.
+          </p>
+        </div>
+      </footer>
+    </div>
+
+    <script src="assets/js/jquery.min.js"></script>
+    <script src="assets/js/jquery.scrollex.min.js"></script>
+    <script src="assets/js/jquery.scrolly.min.js"></script>
+    <script src="assets/js/skel.min.js"></script>
+    <script src="assets/js/util.js"></script>
+    <script src="assets/js/main.js"></script>
+  </body>
+</html>
