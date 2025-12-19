@@ -1,140 +1,150 @@
 <!DOCTYPE html>
 <html>
-  <head>
+
+<head>
     <title>Code Implementation - MARS Robot Vision</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="stylesheet" href="assets/css/main.css" />
-    <link
-      href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css"
-      rel="stylesheet"
-    />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
 
     <style>
-      /* --- Layout & Typography --- */
-      .align-center p,
-      .align-center ul,
-      .align-center ol {
-        text-align: left;
-        max-width: 800px;
-        margin-left: auto;
-        margin-right: auto;
-        font-size: 1.1em;
-        line-height: 1.8;
-        margin-bottom: 2rem;
-      }
+        /* --- Layout & Typography --- */
+        .align-center p,
+        .align-center ul,
+        .align-center ol {
+            text-align: left;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            font-size: 1.1em;
+            line-height: 1.8;
+            margin-bottom: 2rem;
+        }
 
-      .align-center h2,
-      .align-center h3,
-      .align-center h4 {
-        text-align: center;
-        margin-bottom: 1.5rem;
-      }
+        .align-center h2,
+        .align-center h3,
+        .align-center h4 {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
 
-      /* --- Code Block Styling --- */
-      .code-wrapper {
-        width: 90%;
-        max-width: 1000px;
-        margin: 2rem auto;
-        background-color: #272822;
-        border-radius: 8px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-        text-align: left;
-        position: relative;
-        overflow: hidden;
-      }
+        .image-row-centered {
+            max-width: 900px;
+            /* adjust to taste */
+            margin: 0 auto;
+        }
 
-      .code-wrapper pre[class*="language-"] {
-        margin: 0 !important;
-        padding: 1.5rem !important;
-        background: transparent !important;
-        border: none !important;
-        box-shadow: none !important;
-        width: 100%;
-        overflow-x: auto;
-      }
+        .align-center .box {
+            max-width: 800px;
+            /* same as text */
+            margin-left: auto;
+            margin-right: auto;
+        }
 
-      code[class*="language-"],
-      pre[class*="language-"] {
-        font-family: "Consolas", "Monaco", "Courier New", monospace !important;
-        font-size: 0.95em !important;
-        line-height: 1.6 !important;
-        text-shadow: none !important;
-      }
+        /* --- Code Block Styling --- */
+        .code-wrapper {
+            width: 90%;
+            max-width: 1000px;
+            margin: 2rem auto;
+            background-color: #272822;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            text-align: left;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .image-centered-under-text .row {
+            justify-content: center;
+        }
+
+        .code-wrapper pre[class*="language-"] {
+            margin: 0 !important;
+            padding: 1.5rem !important;
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        code[class*="language-"],
+        pre[class*="language-"] {
+            font-family: "Consolas", "Monaco", "Courier New", monospace !important;
+            font-size: 0.95em !important;
+            line-height: 1.6 !important;
+            text-shadow: none !important;
+        }
     </style>
-  </head>
+</head>
 
-  <body>
+<body>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
 
     <div id="wrapper" class="divided">
-      <section
-        class="banner style1 orient-center content-align-center image-position-center onload-image-fade-in onload-content-fade-right"
-      >
-        <div class="content">
-          <h1>Perception & Vision</h1>
-          <p class="major">
-            This page details the computer vision pipeline used to detect the
-            target object. The system runs on the robot's onboard computer,
-            processing camera feeds to identify the object, calculate its 3D
-            position, and stream visualization data to Foxglove Studio for
-            real-time debugging.
-          </p>
-          <ul class="actions vertical">
-            <li>
-              <a
-                href="index.html#detect"
-                class="button big wide smooth-scroll-middle"
-                >Return to Main Page</a
-              >
-            </li>
-          </ul>
-        </div>
-        <div class="image">
-          <img src="images/innate_eyes.png" alt="Vision System Overview" />
-        </div>
-      </section>
-
-      <section class="wrapper style1 align-center" id="detection">
-        <div class="inner">
-          <h2>1. Image Processing Pipeline</h2>
-          <p>
-            The perception pipeline begins with processing raw RGB images from
-            the onboard camera. To ensure robust detection, we convert the image
-            to grayscale and apply a white intensity threshold. Since the robot
-            operates in a known environment, we use
-            <strong>plane filtering</strong> to mask out the upper half of the
-            image, ignoring background noise above the ground plane.
-          </p>
-
-          <div class="box alt content-align-center orient-center">
-            <div class="row gtr-50 uniform">
-              <div class="col-6">
-                <div class="image fit">
-                  <img src="images/normal_vision.png" alt="Raw Camera Feed" />
-                </div>
-              </div>
-              <div class="col-6">
-                <div class="image fit">
-                  <img
-                    src="images/object_detect.png"
-                    alt="Threshold & Masked"
-                  />
-                </div>
-              </div>
+        <section
+            class="banner style1 orient-center content-align-center image-position-center onload-image-fade-in onload-content-fade-right">
+            <div class="content">
+                <h1>Perception & Vision</h1>
+                <p class="major">
+                    This page details the computer vision pipeline used to detect the
+                    target object. The system runs on the robot's onboard computer,
+                    processing camera feeds to identify the object, calculate its 3D
+                    position, and stream visualization data to Foxglove Studio for
+                    real-time debugging.
+                </p>
+                <ul class="actions vertical">
+                    <li>
+                        <a href="index.html#detect" class="button big wide smooth-scroll-middle">Return to Main Page</a>
+                    </li>
+                </ul>
             </div>
-          </div>
-          <p>
-            We then apply a sequence of
-            <strong>morphological operations</strong> (erosion followed by
-            dilation) to remove small artifacts and smooth the object's
-            silhouette before performing contour detection.
-          </p>
-        </div>
+            <div class="image">
+                <img src="images/percept.png" alt="Vision System Overview" />
+            </div>
+        </section>
 
-        <div class="code-wrapper">
-          <pre><code class="language-python"># From detect_object.py
+        <section class="wrapper style1 align-center" id="detection">
+            <div class="inner">
+                <h2>1. Image Processing Pipeline</h2>
+                <p>
+                    The perception pipeline begins with processing raw RGB images from
+                    the onboard camera. To ensure robust detection, we convert the image
+                    to grayscale and apply a white intensity threshold. Since the robot
+                    operates in a known environment, we use
+                    <strong>plane filtering</strong> to mask out the upper half of the
+                    image, ignoring background noise above the ground plane.
+                </p>
+                <div class="image fit" style="display: block; max-width: 600px; margin: 0 auto">
+                            <div class="col-6">
+                                <div class="image fit">
+                                    <img src="images/normal_vision.png" alt="Raw Camera Feed" />
+                                </div>
+                            </div>
+                        </div>
+                 
+                    <div class="image fit" style="display: block; max-width: 600px; margin: 0 auto">
+                                <div class="col-6">
+                                    <div class="image fit">
+                                        <img src="images/object_detect.png" alt="Threshold & Masked" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                
+
+                    <p>
+                        We then apply a sequence of
+                        <strong>morphological operations</strong> (erosion followed by
+                        dilation) to remove small artifacts and smooth the object's
+                        silhouette before performing contour detection.
+                    </p>
+                </div>
+
+                <div class="code-wrapper">
+                    <pre><code class="language-python"># From detect_object.py
 
 def detect_white_object(self, image, camera_params, camera_name="unknown"):
     # Convert to grayscale
@@ -156,40 +166,34 @@ def detect_white_object(self, image, camera_params, camera_name="unknown"):
     
     # Find contours
     contours, _ = cv2.findContours(binary, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)</code></pre>
-        </div>
-      </section>
+                </div>
+        </section>
 
-      <section class="wrapper style1 align-center" id="localization">
-        <div class="inner">
-          <h3>2. Localization & Depth Estimation</h3>
-          <p>
-            Once the contour is found, we calculate the
-            <strong>centroid</strong> using image moments, which is more stable
-            than using a simple bounding box. Depth is estimated using
-            <strong>similar triangles</strong> based on the object's known
-            real-world size and its apparent pixel size.
-          </p>
+        <section class="wrapper style1 align-center" id="localization">
+            <div class="inner">
+                <h3>2. Localization & Depth Estimation</h3>
+                <p>
+                    Once the contour is found, we calculate the
+                    <strong>centroid</strong> using image moments, which is more stable
+                    than using a simple bounding box. Depth is estimated using
+                    <strong>similar triangles</strong> based on the object's known
+                    real-world size and its apparent pixel size.
+                </p>
 
-          <div
-            class="image fit"
-            style="display: block; max-width: 600px; margin: 0 auto"
-          >
-            <img
-              src="images/object_detect.png"
-              alt="Object detection with bounding box and distance text"
-              style="width: 100%; height: auto"
-            />
-          </div>
+                <div class="image fit" style="display: block; max-width: 600px; margin: 0 auto">
+                    <img src="images/object_detect.png" alt="Object detection with bounding box and distance text"
+                        style="width: 100%; height: auto" />
+                </div>
 
-          <p>
-            Finally, we project the 2D pixel coordinates into a 3D position
-            vector (x, y, z) in the camera frame. This 3D pose is published to
-            ROS topics to be used by the motion planner.
-          </p>
-        </div>
+                <p>
+                    Finally, we project the 2D pixel coordinates into a 3D position
+                    vector (x, y, z) in the camera frame. This 3D pose is published to
+                    ROS topics to be used by the motion planner.
+                </p>
+            </div>
 
-        <div class="code-wrapper">
-          <pre><code class="language-python"># From detect_object.py
+            <div class="code-wrapper">
+                <pre><code class="language-python"># From detect_object.py
 
 # Calculate Centroid using Moments
 M = cv2.moments(largest_contour)
@@ -205,27 +209,27 @@ distance = (self.object_real_size * f) / pixel_size if pixel_size > 0 else 0
 x_norm = (cx - camera_params['cx']) / camera_params['fx']
 y_norm = (cy - camera_params['cy']) / camera_params['fy']
 point_3d = np.array([x_norm * distance, y_norm * distance, distance])</code></pre>
-        </div>
-      </section>
+            </div>
+        </section>
 
-      <section class="wrapper style1 align-center" id="visualization">
-        <div class="inner">
-          <h3>3. Real-Time Visualization (Foxglove)</h3>
-          <p>
-            Since the robot operates wirelessly, transmitting raw video feeds
-            consumes too much bandwidth. To solve this, we implemented a custom
-            debug publisher that overlays detection data (contours, distance,
-            and detection zones) onto the image.
-          </p>
-          <p>
-            The image is then <strong>compressed to JPEG</strong> before being
-            published. This allows us to visualize the robot's "thought process"
-            in real-time using Foxglove Studio without lagging the network.
-          </p>
-        </div>
+        <section class="wrapper style1 align-center" id="visualization">
+            <div class="inner">
+                <h3>3. Real-Time Visualization (Foxglove)</h3>
+                <p>
+                    Since the robot operates wirelessly, transmitting raw video feeds
+                    consumes too much bandwidth. To solve this, we implemented a custom
+                    debug publisher that overlays detection data (contours, distance,
+                    and detection zones) onto the image.
+                </p>
+                <p>
+                    The image is then <strong>compressed to JPEG</strong> before being
+                    published. This allows us to visualize the robot's "thought process"
+                    in real-time using Foxglove Studio without lagging the network.
+                </p>
+            </div>
 
-        <div class="code-wrapper">
-          <pre><code class="language-python"># From detect_object.py
+            <div class="code-wrapper">
+                <pre><code class="language-python"># From detect_object.py
 
 def publish_debug_image(self, image, detection, camera_name):
     """Create and publish debug visualization (both raw and compressed)"""
@@ -254,17 +258,17 @@ def publish_debug_image(self, image, detection, camera_name):
     compressed_msg.format = "jpeg"
     compressed_msg.data = compressed_data.tobytes()
     self.base_debug_compressed_pub.publish(compressed_msg)</code></pre>
-        </div>
-      </section>
+            </div>
+        </section>
 
-      <footer class="wrapper style1 align-center">
-        <div class="inner">
-          <p>
-            &copy; Intro to Robotics Project. Design:
-            <a href="https://html5up.net">HTML5 UP</a>.
-          </p>
-        </div>
-      </footer>
+        <footer class="wrapper style1 align-center">
+            <div class="inner">
+                <p>
+                    &copy; Intro to Robotics Project. Design:
+                    <a href="https://html5up.net">HTML5 UP</a>.
+                </p>
+            </div>
+        </footer>
     </div>
 
     <script src="assets/js/jquery.min.js"></script>
@@ -273,5 +277,6 @@ def publish_debug_image(self, image, detection, camera_name):
     <script src="assets/js/skel.min.js"></script>
     <script src="assets/js/util.js"></script>
     <script src="assets/js/main.js"></script>
-  </body>
+</body>
+
 </html>
