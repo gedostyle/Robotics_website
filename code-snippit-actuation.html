@@ -173,11 +173,11 @@ def control_loop(self):
 
 class GraspState(Enum):
     IDLE = 0
-    [cite_start]MOVE_TO_OVERHEAD = 2       # Lift arm to clear camera view [cite: 89]
-    [cite_start]POSITION_ABOVE_OBJECT = 6  # Align XY coordinates [cite: 90]
-    [cite_start]LOWER_TO_OBJECT = 8        # Vertical Z descent [cite: 91]
+    MOVE_TO_OVERHEAD = 2       # Lift arm to clear camera view
+    POSITION_ABOVE_OBJECT = 6  # Align XY coordinates
+    LOWER_TO_OBJECT = 8        # Vertical Z descent
     CLOSE_GRIPPER = 10         # Actuate end-effector
-    [cite_start]RETURN_TO_REST = 11        # Safe transport pose [cite: 92]
+    RETURN_TO_REST = 11        # Safe transport pose
 
 def update_arm_state(self):
     """ Transitions states based on motion completion flags """
@@ -192,8 +192,8 @@ def update_arm_state(self):
           <h3>3. Actuating the Joints (Inverse Kinematics)</h3>
           <p>
             To move the arm to a specific 3D coordinate (x, y, z), we must
-            calculate the required angles for all 5 joints. [cite_start]We use
-            an <strong>Inverse Kinematics (IK) Solver</strong> that takes the
+            calculate the required angles for all 5 joints. We use an
+            <strong>Inverse Kinematics (IK) Solver</strong> that takes the
             target coordinate in the base frame and outputs the necessary joint
             configurations.
           </p>
@@ -228,8 +228,8 @@ def move_arm_to_coords(self, x, y, z):
         <div class="inner">
           <h2>4. End-Effector (Gripper) Actuation</h2>
           <p>
-            The final stage of actuation is physical interaction.
-            [cite_start]The gripper is driven by a servo motor controlled via
+            The final stage of actuation is physical interaction. The gripper is
+            driven by a servo motor controlled via
             <strong>Pulse Width Modulation (PWM)</strong> signals. We determined
             specific duty cycles corresponding to the "Open" (7.5) and "Closed"
             (12.5) positions to ensure a firm grasp on the paper ball.

@@ -108,7 +108,7 @@
 
       <section class="wrapper style1 align-center" id="detection">
         <div class="inner">
-          <h3>Computer Vision Model</h2>
+          <h3>Computer Vision Model</h3>
           <p>
             With three vision sensors onboard—a base camera, an arm-mounted camera, 
             and a LiDAR—we had multiple options for detecting and localizing objects 
@@ -125,7 +125,7 @@
           </p>
 
           
-          <h3>Image Processing Pipeline</h2>
+          <h3>Image Processing Pipeline</h3>
           <p>
               The perception pipeline begins with processing raw RGB images from
               the onboard camera that are published to the default Innate topics. 
@@ -140,9 +140,9 @@
 
  
           <p>
-            Once the filtering is processed, we use the built in contour function 
-            of the opencv model to detect the object, which can then be used 
-            for localisation.
+            Once the filtering is processed, we use the built-in contour function 
+            of the OpenCV model to detect the object, which can then be used 
+            for localization.
           </p>
         </div>
 
@@ -206,27 +206,7 @@ def detect_white_object(self, image, camera_params, camera_name="unknown"):
                     </div>
             </div>
 
-        <!-- <div class="code-wrapper">
-          <pre><code class="language-python"># From detect_object.py
-            <div class="code-wrapper">
-                <pre><code class="language-python"># From detect_object.py
-
-# Calculate Centroid using Moments
-M = cv2.moments(largest_contour)
-cx = int(M['m10'] / M['m00'])
-cy = int(M['m01'] / M['m00'])
-
-# DISTANCE ESTIMATION (Similar triangles method)
-pixel_size = max(w, h)
-f = (camera_params['fx'] + camera_params['fy']) / 2.0
-distance = (self.object_real_size * f) / pixel_size if pixel_size > 0 else 0
-
-# Convert to 3D point in camera frame
-x_norm = (cx - camera_params['cx']) / camera_params['fx']
-y_norm = (cy - camera_params['cy']) / camera_params['fy']
-point_3d = np.array([x_norm * distance, y_norm * distance, distance])</code></pre>
-        </div> -->
-      </section>
+        </section>
             </div>
         </section>
 
